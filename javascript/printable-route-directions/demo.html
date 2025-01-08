@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Print Driving Directions - Powered by Geoapify</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@highlightjs/cdn-assets@11.3.1/styles/a11y-light.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/@geoapify/route-directions@^1/styles/styles.min.css" />
+  <style>html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.demo-container {
+    flex: 1;
+    max-height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.demo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    margin: 10px;
+    box-shadow: 0px 0px 5px 3px rgb(0 0 0 / 10%);
+    border-radius: 5px;
+}
+
+.controls {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#instructions {
+    flex: 1;
+    max-width: 800px;
+    margin: auto;
+}
+
+#my-map {
+    flex: 1;
+}
+
+.code-container {
+    padding: 10px;
+    padding-top: 50px;
+    min-width: 800px;
+    max-width: 800px;
+
+    overflow-y: auto;
+    display: block;
+}
+
+.direction-waypoints {
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.8);
+    margin-bottom: 30px;
+}
+
+.direction-waypoints.smaller {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.direction-waypoints .direction-waypoints-from-to{
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.direction-instruction {
+    display: flex;
+    flex-direction: row;
+    margin: 10px 0;
+
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.direction-instruction-number {
+    margin-right: 20px;
+}
+
+.direction-instruction-icon {
+    min-width: 40px;
+    max-width: 40px;
+    display: flex;
+}
+
+.direction-instruction-image {
+    width: 300px;
+    height: 200px;
+    display: flex;
+    margin-left: auto;
+}
+
+.button {
+    height: 30px;
+    margin-left: auto;
+    background: grey;
+    border: none;
+    width: 100px;
+    border-radius: 4px;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.button:focus {
+    outline: none;
+    box-shadow: 0 0 4px rgba(76, 175, 80, 0.8);
+}
+
+.hidden {
+    display: none;
+}
+
+.elevation-profile-container {
+    max-height: 250px;
+    min-height: 250px;
+
+    text-align: center;
+}
+
+.instructions-placeholder {
+    padding: 50px 20px;
+    text-align: center;
+    color: #888;
+}
+
+.route-preview-container {
+    text-align: center;
+}
+
+.route-preview {
+    width: 100%;
+    max-width: 800px;
+}</style>
+</head>
+
+<body>
+  <div class="demo-container">
+    <div class="demo">
+      <div class="controls">
+        <div id="route-directions"></div>
+      </div>
+      <div id="my-map"></div>
+    </div>
+    <div class="code-container">
+      <button class="button hidden" id="print-button" onclick="printInstructions()">🖨️ Print</button>
+      <div class="instructions-placeholder" id="instructions-placeholder">No waypoints have been selected. Please add at least two waypoints to generate driving directions.</div>
+      <div class="route-preview-container" id="route-preview-container">
+        <img class="route-preview hidden" id="route-preview"/>
+      </div>      
+      <div class="elevation-profile-container hidden" id="chart-container">
+        <canvas id="route-elevation-chart" style="width:100%;height:100%"></canvas>
+      </div>
+      <div id="instructions">
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/@highlightjs/cdn-assets@11.3.1/highlight.min.js"></script>
+  <script src="https://unpkg.com/@geoapify/route-directions@^1/dist/index.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
+
+  <script>hljs.highlightAll();</script>
+  <script type="module">Chart.register(
+    Chart.LineElement,
+    Chart.LineController,
+    Chart.Legend,
+    Chart.Tooltip,
+    Chart.LinearScale,
+    Chart.PointElement,
+    Chart.Filler,
+    Chart.Title
+);
+
+let chartInstance;
+
+export function loadElevationData(routeData) {
+    destroyChart();
+    let elevationData = calculateElevationProfileData(routeData);
+    drawElevationProfile(routeData, elevationData);
+}
+
+export function calculateElevationProfileData(routeData) {
+    const legElevations = [];
+
+    // elevation_range contains pairs [distance, elevation] for every leg geometry point
+    routeData.properties.legs.forEach(leg => {
+        if (leg.elevation_range) {
+            legElevations.push(leg.elevation_range);
+        } else {
+            legElevations.push([]);
+        }
+    });
+
+    let labels = [];
+    let data = [];
+
+    legElevations.forEach((legElevation, index) => {
+        let previousLegsDistance = 0;
+        for (let i = 0; i <= index - 1; i++) {
+            previousLegsDistance += legElevations[i][legElevations[i].length - 1][0];
+        }
+
+        labels.push(...legElevation.map(elevationData => elevationData[0] + previousLegsDistance));
+        data.push(...legElevation.map(elevationData => elevationData[1]));
+    });
+
+    // optimize array size to avoid performance problems
+    const labelsOptimized = [];
+    const dataOptimized = [];
+    const minDist = 5; // 5m
+    const minHeight = 10; // ~10m
+
+    labels.forEach((dist, index) => {
+        if (index === 0 || index === labels.length - 1 ||
+            (dist - labelsOptimized[labelsOptimized.length - 1]) > minDist ||
+            Math.abs(data[index] - dataOptimized[dataOptimized.length - 1]) > minHeight) {
+            labelsOptimized.push(dist);
+            dataOptimized.push(data[index]);
+        }
+    });
+
+    return {
+        data: dataOptimized,
+        labels: labelsOptimized
+    }
+}
+
+export function drawElevationProfile(routeData, elevationData) {
+    const ctx = document.getElementById("route-elevation-chart").getContext("2d");
+    const chartData = {
+        labels: elevationData.labels,
+        datasets: [{
+            data: elevationData.data,
+            fill: true,
+            borderColor: '#66ccff',
+            backgroundColor: '#66ccff66',
+            tension: 0.1,
+            pointRadius: 0,
+            spanGaps: true
+        }]
+    };
+
+
+    const config = {
+        type: 'line',
+        data: chartData,
+        plugins: [{
+            beforeInit: (chart, args, options) => {
+                const maxHeight = Math.max(...chart.data.datasets[0].data);
+
+                chart.options.scales.x.min = Math.min(...chart.data.labels);
+                chart.options.scales.x.max = Math.max(...chart.data.labels);
+                chart.options.scales.y.max = maxHeight + Math.round(maxHeight * 0.2);
+                chart.options.scales.y1.max = maxHeight + Math.round(maxHeight * 0.2);
+            }
+        }],
+        options: {
+            onHover: function(e, item) {
+                // add hover here!!!
+            },
+            animation: false,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index',
+            },
+            tooltip: {
+                position: 'nearest'
+            },
+            scales: {
+                x: {
+                    type: 'linear'
+                },
+                y: {
+                    type: 'linear',
+                    beginAtZero: true
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    beginAtZero: true,
+                    // grid line settings
+                    grid: {
+                        drawOnChartArea: false, // only want the grid lines for one axis to show up
+                    },
+                },
+            },
+            plugins: {
+                title: {
+                    align: "end",
+                    display: true,
+                    text: "Distance, m / Elevation, m"
+                },
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    displayColors: false,
+                    callbacks: {
+                        title: (tooltipItems) => {
+                            return "Distance: " + tooltipItems[0].label + 'm'
+                        },
+                        label: (tooltipItem) => {
+                            return "Elevation: " + tooltipItem.raw + 'm'
+                        },
+                    }
+                }
+            }
+        }
+    };
+
+    chartInstance = new Chart(ctx, config);
+    updateChartVisibility();
+}
+
+export function updateChartVisibility() {
+    const chartContainer = document.getElementById("chart-container");
+    if (chartInstance) {
+        chartContainer.classList.remove("hidden");
+    } else {
+        chartContainer.classList.add("hidden");
+    }
+}
+
+export function destroyChart() {
+    if(chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+        updateChartVisibility();
+    }
+}
+
+// Exported like this, as in the combined demo we can't use import/exports.
+window.loadElevationData = loadElevationData;
+window.calculateElevationProfileData = calculateElevationProfileData;
+window.drawElevationProfile = drawElevationProfile;
+window.updateChartVisibility = updateChartVisibility;
+window.destroyChart = destroyChart;</script>
+  <script type="module">// The Leaflet map Object
+var map = L.map('my-map', { zoomControl: false }).setView([48.1500327, 11.5753989], 6);
+
+// The API Key provided is restricted to this demo
+// Get your own API Key on https://myprojects.geoapify.com
+var apiKey = "93b8e26606dd485183dcdab30f239f81";
+var mapURL = L.Browser.retina
+    ? `https://maps.geoapify.com/v1/tile/{mapStyle}/{z}/{x}/{y}@2x.png?apiKey={apiKey}`
+    : `https://maps.geoapify.com/v1/tile/{mapStyle}/{z}/{x}/{y}.png?apiKey={apiKey}`;
+
+// Add map tiles layer. Set 20 as the maximal zoom and provide map data attribution.
+L.tileLayer(mapURL, {
+    attribution: 'Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> | <a href="https://openmaptiles.org/" rel="nofollow" target="_blank">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" rel="nofollow" target="_blank">© OpenStreetMap</a> contributors',
+    apiKey: apiKey,
+    mapStyle: "osm-bright-smooth", // More map styles on https://apidocs.geoapify.com/docs/maps/map-tiles/
+    maxZoom: 20
+}).addTo(map);
+
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+let markers = [];
+let routeLayer;
+let routeShadowLayer;
+let instructionMarkers = [];
+
+
+const markerIcon = L.icon({
+    iconUrl: `https://api.geoapify.com/v1/icon/?type=awesome&scaleFactor=2&color=%23ff4949&apiKey=${apiKey}`, //icon generated by Geoapify Marker Icon API
+    iconSize: [31, 46], // size of the icon
+    iconAnchor: [15.5, 42], // point of the icon which will correspond to marker's location
+    popupAnchor: [0, -45] // point from which the popup should open relative to the iconAnchor
+});
+
+const routeDirections = new directions.RouteDirections(document.getElementById("route-directions"), apiKey, {
+    supportedModes: ['walk', 'hike', 'scooter', 'motorcycle', 'drive', 'light_truck', 'medium_truck', 'truck', 'bicycle', 'mountain_bike', 'road_bike', 'bus'],
+    supportedOptions: ['highways', 'tolls', 'ferries'],
+    elevation: true
+}, {
+    placeholder: "Enter an address here or click on the map"
+});
+
+// add locations by click on the map
+map.on("click", (event) => {
+    routeDirections.addLocation(event.latlng.lat, event.latlng.lng);
+});
+
+routeDirections.on('waypointChanged', (waypoint, reason) => {
+    if (reason !== "added" && routeLayer) {
+        routeLayer.remove();
+        routeShadowLayer.remove();
+        instructionMarkers.forEach(marker => marker.remove());
+        instructionMarkers = [];
+    }
+
+    const instrictionContainer = document.getElementById("instructions");
+    instrictionContainer.innerHTML = '';
+    updateMarkers();
+    updateElementsVisibility();
+    destroyChart();
+});
+
+routeDirections.on('routeCalculated', (geojson) => {
+    loadElevationData(geojson);
+    visualizeRoute(geojson);
+    generateInstructions(geojson);
+
+    getMapPreview(geojson);
+
+    updateElementsVisibility();
+});
+
+function getMapPreview(geojson) {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    geojson.properties.linecolor = '#6699ff';
+    geojson.properties.linewidth = '5';
+
+    const params = {
+        style: "osm-bright",
+        width: 800,
+        height: 250,
+        scaleFactor: 2,
+        geojson: geojson,
+        markers: geojson.properties.waypoints.map(waypoint => {
+            return {
+                "lat": waypoint.location[1],
+                "lon": waypoint.location[0],
+                "color": "#ff0000",
+                "size": "medium",
+                "type": "awesome"
+            }
+        })
+    };
+
+    const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: JSON.stringify(params),
+        redirect: "follow"
+    };
+
+    fetch(`https://maps.geoapify.com/v1/staticmap?apiKey=${apiKey}`, requestOptions)
+    .then((response) => response.blob())
+    .then((blob) => {
+        var reader = new FileReader() ;
+        reader.onload = function() {
+            const mapPreview = document.getElementById("route-preview");
+            mapPreview.src = this.result;
+            mapPreview.classList.remove("hidden");
+        };
+        reader.readAsDataURL(blob) ;
+    })
+    .catch((error) => console.error(error));
+}
+
+function updateElementsVisibility() {
+    const printButton = document.getElementById("print-button");
+    const instructionsPlaceholder = document.getElementById("instructions-placeholder");
+    const mapPreview = document.getElementById("route-preview");
+
+    const instructions = document.getElementById("instructions");
+    if (instructions.innerHTML.trim()) {
+        printButton.classList.remove("hidden");
+        instructionsPlaceholder.classList.add("hidden");
+    } else {
+        mapPreview.classList.add("hidden");
+        printButton.classList.add("hidden");
+        instructionsPlaceholder.classList.remove("hidden");
+    }
+}
+
+function updateMarkers() {
+    markers.forEach(marker => marker.remove());
+    markers = [];
+    const bounds = L.latLngBounds();
+
+    const options = routeDirections.getOptions();
+    options.waypoints.filter(waypoint => waypoint.lat && waypoint.lon).forEach(waypoint => {
+        bounds.extend([waypoint.lat, waypoint.lon]);
+        markers.push(L.marker([waypoint.lat, waypoint.lon], {
+            icon: markerIcon
+        }).addTo(map));
+    });
+
+    if (markers.length > 1 && bounds.isValid()) {
+        map.fitBounds(bounds, { padding: [100, 100] });
+    } else if (markers.length) {
+        map.panTo(markers[0].getLatLng())
+    }
+}
+
+function visualizeRoute(geojson) {
+    if (routeLayer) {
+        routeLayer.remove();
+        routeShadowLayer.remove();
+        instructionMarkers.forEach(marker => marker.remove());
+        instructionMarkers = [];
+    }
+
+    if (!geojson || !geojson.properties) {
+        return;
+    }
+
+    routeShadowLayer = L.geoJSON(geojson, {
+        style: function (feature) {
+            return { color: '#0055ff', weight: 6 };
+        }
+    }).addTo(map);
+
+    // create a route layer, chack more styling options here - https://leafletjs.com/reference.html#path
+    routeLayer = L.geoJSON(geojson, {
+        style: function (feature) {
+            return { color: '#6699ff', weight: 4 };
+        }
+    }).addTo(map);
+
+    const points = geojson.geometry.coordinates;
+    geojson.properties.legs.forEach((leg, legIndex) => {
+        const legPoints = points[legIndex];
+        leg.steps.forEach(step => {
+            // create turn-by-turn instruction marker, check more styling options here - https://leafletjs.com/reference.html#path
+            instructionMarkers.push(L.circleMarker([legPoints[step.from_index][1], legPoints[step.from_index][0]], {
+                radius: 5,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: "#fff",
+                color: '#0055ff',
+                weight: 1
+            }).bindPopup(step.instruction.text).addTo(map));
+        });
+    });
+}
+
+function generateInstructions(geojson) {
+    const type2icon = {
+        "StartAt": "navigation",
+        "StartAtRight": "navigation",
+        "StartAtLeft": "navigation",
+        "DestinationReached": "place",
+        "DestinationReachedRight": "place",
+        "DestinationReachedLeft": "place",
+        "Straight": "straight",
+        "SlightRight": "turn_slight_right",
+        "Right": "turn_right",
+        "SharpRight": "turn_right",
+        "TurnAroundRight": "u_turn_right",
+        "TurnAroundLeft": "u_turn_left",
+        "SharpLeft": "turn_left",
+        "Left": "turn_left",
+        "SlightLeft": "turn_slight_left",
+        "ExitRight": "turn_slight_right",
+        "ExitLeft": "turn_slight_left",
+        "StayRight": "straight",
+        "StayLeft": "straight",
+        "Merge": "merge",
+        "FerryEnter": "directions_boat",
+        "FerryExit": "directions_boat",
+        "MergeRight": "ramp_right",
+        "MergeLeft": "ramp_left",
+        "Roundabout": "roundabout"
+    }
+
+    const waypoints = routeDirections.getOptions().waypoints;
+
+    const instrictionContainer = document.getElementById("instructions");
+    instrictionContainer.innerHTML = '';
+
+    const isMetric = geojson.properties.distance_units === 'meters';
+
+    if (geojson.properties.legs.length > 1) {
+        const waypointsInfo = document.createElement("div");
+        waypointsInfo.classList.add("direction-waypoints");
+
+        const distance = toPrettyDistance(geojson.properties.distance, isMetric);
+        const time = toPrettyTime(geojson.properties.time);
+        waypointsInfo.textContent = `${distance}, ${time}`;
+
+        instrictionContainer.appendChild(waypointsInfo);
+    }
+
+    geojson.properties.legs.forEach((leg, index) => {
+        const waypointsInfo = document.createElement("div");
+        waypointsInfo.classList.add("direction-waypoints");
+
+        const from = `${waypoints[index].address ? waypoints[index].address : `${waypoints[index].lat} ${waypoints[index].lon}`}`;
+        const to = `${waypoints[index + 1].address ? waypoints[index + 1].address : `${waypoints[index + 1].lat} ${waypoints[index + 1].lon}`}`;
+        const distance = toPrettyDistance(leg.distance, isMetric);
+        const time = toPrettyTime(leg.time);
+        waypointsInfo.textContent = `${distance}, ${time}`;
+
+        if (geojson.properties.legs.length > 1) {
+            waypointsInfo.classList.add("smaller");
+
+            const fromTo = document.createElement("div");
+            fromTo.classList.add("direction-waypoints-from-to");
+            fromTo.textContent = `(${from} - ${to})`;
+            waypointsInfo.appendChild(fromTo);
+        }
+
+        instrictionContainer.appendChild(waypointsInfo);
+
+        leg.steps.forEach((step, stepIndex) => {
+            // create instruction for each step
+            const instruction = document.createElement("div");
+            instruction.classList.add("direction-instruction");
+
+            const numberElement = document.createElement("div");
+            numberElement.classList.add("direction-instruction-number");
+            numberElement.innerHTML = `${stepIndex + 1}.`;
+
+            instruction.appendChild(numberElement);
+
+            const iconElement = document.createElement("div");
+            iconElement.classList.add("direction-instruction-icon");
+
+            if (type2icon[step.instruction.type]) {
+                addIcon(iconElement, type2icon[step.instruction.type]);
+            }
+            instruction.appendChild(iconElement);
+
+            const infoElement = document.createElement("div");
+            infoElement.classList.add("direction-instruction-info");
+
+            const textElement = document.createElement("div");
+            textElement.classList.add("direction-instruction-text");
+            let text = step.instruction.text;
+
+            if (step.instruction.streets) {
+                step.instruction.streets.forEach(street => {
+                    text = text.split(street).join(`<b>${street}</b>`);
+                })
+            }
+
+            textElement.innerHTML = text;
+            infoElement.appendChild(textElement);
+
+            if (step.instruction.post_transition_instruction && step.instruction.post_transition_instruction !== step.instruction.text) {
+                const textElementPost = document.createElement("div");
+                textElementPost.classList.add("direction-instruction-text-post");
+                textElementPost.textContent = step.instruction.post_transition_instruction;
+                infoElement.appendChild(textElementPost);
+            }
+
+            instruction.appendChild(infoElement);
+            instrictionContainer.appendChild(instruction);
+
+            const imageElement = document.createElement("img");
+            imageElement.src = generateImageURL(index, step, geojson.geometry.coordinates);
+            imageElement.classList.add("direction-instruction-image");
+            instruction.appendChild(imageElement);
+        });
+    });
+}
+
+function generateImageURL(legIndex, step, coordinates) {
+    let turnCoordinate = coordinates[legIndex][step.from_index];
+
+    let markerCoordinates = `${turnCoordinate[0]},${turnCoordinate[1]}`;
+    let style = "osm-bright";
+    const isStart = ["StartAt", "StartAtRight", "StartAtLeft"].indexOf(step.instruction.type) >= 0;
+    const isFinish = ["DestinationReached", "DestinationReachedRight","DestinationReachedLeft"].indexOf(step.instruction.type) >= 0;
+
+
+    let relatedCoordinatesPast = getRelatedCoordinates( coordinates[legIndex], step, 'past');
+    let relatedCoordinatesNext = getRelatedCoordinates( coordinates[legIndex], step, 'next');
+    let manoeuvre = getRelatedCoordinates( coordinates[legIndex], step, 'manoeuvre');
+    let manoeuvreArrow = getRelatedCoordinates( coordinates[legIndex], step, 'manoeuvre-arrow');
+
+    let geometries = [];
+
+    if (!isStart) {
+        geometries.push(`polyline:${relatedCoordinatesPast};linewidth:5;linecolor:${encodeURIComponent('#ad9aad')}`);
+    }
+
+    if (!isFinish) {
+        geometries.push(`polyline:${relatedCoordinatesNext};linewidth:5;linecolor:${encodeURIComponent('#eb44ea')}`);
+    }
+
+    if (!isFinish) {
+        geometries.push(`polyline:${manoeuvre};linewidth:7;linecolor:${encodeURIComponent('#333333')};lineopacity:1`);
+        geometries.push(`polyline:${manoeuvre};linewidth:5;linecolor:${encodeURIComponent('#ffffff')};lineopacity:1`);
+        geometries.push(`polygon:${manoeuvreArrow};linewidth:1;linecolor:${encodeURIComponent('#333333')};lineopacity:1;fillcolor:${encodeURIComponent('#ffffff')};fillopacity:1`);
+    }
+
+    let bearing = getBearing(coordinates[legIndex], step) + 180;
+    let icon = isFinish ? `&marker=lonlat:${markerCoordinates};type:material;color:%23539de4;icon:flag-checkered;icontype:awesome;whitecircle:no` : '';
+
+    return `https://maps.geoapify.com/v1/staticmap?style=${style}&width=300&height=200&apiKey=${apiKey}&geometry=${geometries.join('|')}&center=lonlat:${markerCoordinates}&zoom=16&scaleFactor=2&bearing=${bearing}&pitch=45${icon}`;
+}
+
+function getBearing(coordinatesArray, step) {
+    let currentCoordinateIndex = step.from_index;
+
+    let currentCoordinate = coordinatesArray[currentCoordinateIndex];
+    let bearingCoordinateIndex = currentCoordinateIndex > 0 ? currentCoordinateIndex - 1 : currentCoordinateIndex + 1;
+    let bearingCoordinate = coordinatesArray[bearingCoordinateIndex];
+
+    while (true) {
+
+        if (turf.length(turf.lineString([bearingCoordinate, currentCoordinate])) >= 0.005 /* 5 meters */) {
+            break;
+        }
+
+        if (bearingCoordinateIndex === 0 || bearingCoordinateIndex === currentCoordinate.length - 1) {
+            break;
+        }
+
+        bearingCoordinateIndex = currentCoordinateIndex > 0 ?  bearingCoordinateIndex - 1: bearingCoordinateIndex + 1;
+        bearingCoordinate = coordinatesArray[bearingCoordinateIndex];
+    }
+    return currentCoordinateIndex > 0 ? turf.bearing(turf.point(currentCoordinate), turf.point(bearingCoordinate)) : turf.bearing(turf.point(bearingCoordinate), turf.point(currentCoordinate));
+}
+
+
+function getRelatedCoordinates(coordinatesArray, step, direction) {
+    let currentCoordinateIndex = step.from_index;
+
+    const numberOfNextCoordinates = 20;
+    let coords;
+
+    if (direction === 'past') {
+        coords = coordinatesArray.slice(Math.max(0, currentCoordinateIndex - numberOfNextCoordinates), currentCoordinateIndex + 1);
+    } else if (direction === 'next') {
+        coords = coordinatesArray.slice(currentCoordinateIndex, currentCoordinateIndex + numberOfNextCoordinates + 1);
+    } else if (direction === 'manoeuvre') {
+        const allCoords = coordinatesArray.slice(Math.max(0, currentCoordinateIndex - numberOfNextCoordinates), currentCoordinateIndex + numberOfNextCoordinates + 1);
+        const viewBbox = turf.bbox(turf.circle(coordinatesArray[currentCoordinateIndex], 0.02));
+        let clipped = turf.bboxClip(turf.lineString(allCoords), viewBbox);
+        
+        if (clipped.geometry.type === 'MultiLineString') {
+            clipped = turf.lineString(clipped.geometry.coordinates
+                .find(lineCoords => turf.booleanContains(turf.lineString(lineCoords), turf.point(coordinatesArray[currentCoordinateIndex]))));
+        }
+
+        const bbox10M = turf.bbox(turf.circle(clipped.geometry.coordinates[clipped.geometry.coordinates.length - 1], 0.01));
+        let clippedForArrow = turf.bboxClip(clipped, bbox10M);
+
+        if (clippedForArrow.geometry.type === 'MultiLineString') {
+            clippedForArrow = turf.lineString(clippedForArrow.geometry.coordinates[clippedForArrow.geometry.coordinates.length - 1]);
+        }
+
+        if (clipped.geometry.coordinates.length && clippedForArrow.geometry.coordinates.length) {
+            const segment = turf.lineSlice(clipped.geometry.coordinates[0], clippedForArrow.geometry.coordinates[0], clipped);
+            coords = segment.geometry.coordinates;
+        }
+    } else {
+        const allCoords = coordinatesArray.slice(Math.max(0, currentCoordinateIndex - numberOfNextCoordinates), currentCoordinateIndex + numberOfNextCoordinates + 1);
+        const viewBbox = turf.bbox(turf.circle(coordinatesArray[currentCoordinateIndex], 0.02));
+        let clipped = turf.bboxClip(turf.lineString(allCoords), viewBbox);
+        if (clipped.geometry.type === 'MultiLineString') {
+            clipped = turf.lineString(clipped.geometry.coordinates
+                .find(lineCoords => turf.booleanContains(turf.lineString(lineCoords), turf.point(coordinatesArray[currentCoordinateIndex]))));        }
+
+        const bbox10M = turf.bbox(turf.circle(clipped.geometry.coordinates[clipped.geometry.coordinates.length - 1], 0.01));
+        let clippedForArrow = turf.bboxClip(clipped, bbox10M);
+
+        if (clippedForArrow.geometry.type === 'MultiLineString') {
+            clippedForArrow = turf.lineString(clippedForArrow.geometry.coordinates[clippedForArrow.geometry.coordinates.length - 1]);
+        }
+
+        const bearing = turf.bearing(clippedForArrow.geometry.coordinates[0], clippedForArrow.geometry.coordinates[clippedForArrow.geometry.coordinates.length - 1])
+        
+        coords = [
+            clippedForArrow.geometry.coordinates[clippedForArrow.geometry.coordinates.length - 1],
+            turf.destination(clippedForArrow.geometry.coordinates[0], 0.005, bearing + 90).geometry.coordinates,
+            turf.destination(clippedForArrow.geometry.coordinates[0], 0.005, bearing - 90).geometry.coordinates,
+            clippedForArrow.geometry.coordinates[clippedForArrow.geometry.coordinates.length - 1]
+        ]
+    }
+
+    let result = [];
+    for(let coordinate of coords) {
+        result.push(`${coordinate[0]},${coordinate[1]}`);
+    }
+
+    return result.join(",");
+}
+
+function addIcon(element, icon) {
+
+    const icons = {
+        navigation: "M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z",
+        place: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z",
+        straight: "11,6.83 9.41,8.41 8,7 12,3 16,7 14.59,8.41 13,6.83 13,21 11,21",
+        turn_slight_right: "M12.34,6V4H18v5.66h-2V7.41l-5,5V20H9v-7.58c0-0.53,0.21-1.04,0.59-1.41l5-5H12.34z",
+        turn_right: "M17.17,11l-1.59,1.59L17,14l4-4l-4-4l-1.41,1.41L17.17,9L9,9c-1.1,0-2,0.9-2,2v9h2v-9L17.17,11z",
+        u_turn_right: "M6,9v12h2V9c0-2.21,1.79-4,4-4s4,1.79,4,4v4.17l-1.59-1.59L13,13l4,4l4-4l-1.41-1.41L18,13.17V9c0-3.31-2.69-6-6-6 S6,5.69,6,9z",
+        u_turn_left: "M18,9v12h-2V9c0-2.21-1.79-4-4-4S8,6.79,8,9v4.17l1.59-1.59L11,13l-4,4l-4-4l1.41-1.41L6,13.17V9c0-3.31,2.69-6,6-6 S18,5.69,18,9z",
+        turn_left: "M6.83,11l1.59,1.59L7,14l-4-4l4-4l1.41,1.41L6.83,9L15,9c1.1,0,2,0.9,2,2v9h-2v-9L6.83,11z",
+        turn_slight_left: "M11.66,6V4H6v5.66h2V7.41l5,5V20h2v-7.58c0-0.53-0.21-1.04-0.59-1.41l-5-5H11.66z",
+        merge: "M6.41,21L5,19.59l4.83-4.83c0.75-0.75,1.17-1.77,1.17-2.83v-5.1L9.41,8.41L8,7l4-4l4,4l-1.41,1.41L13,6.83v5.1 c0,1.06,0.42,2.08,1.17,2.83L19,19.59L17.59,21L12,15.41L6.41,21z",
+        directions_boat: "M20 21c-1.39 0-2.78-.47-4-1.32-2.44 1.71-5.56 1.71-8 0C6.78 20.53 5.39 21 4 21H2v2h2c1.38 0 2.74-.35 4-.99 2.52 1.29 5.48 1.29 8 0 1.26.65 2.62.99 4 .99h2v-2h-2zM3.95 19H4c1.6 0 3.02-.88 4-2 .98 1.12 2.4 2 4 2s3.02-.88 4-2c.98 1.12 2.4 2 4 2h.05l1.89-6.68c.08-.26.06-.54-.06-.78s-.34-.42-.6-.5L20 10.62V6c0-1.1-.9-2-2-2h-3V1H9v3H6c-1.1 0-2 .9-2 2v4.62l-1.29.42c-.26.08-.48.26-.6.5s-.15.52-.06.78L3.95 19zM6 6h12v3.97L12 8 6 9.97V6z",
+        ramp_right: "M11,21h2V6.83l1.59,1.59L16,7l-4-4L8,7l1.41,1.41L11,6.83V9c0,4.27-4.03,7.13-6,8.27l1.46,1.46 C8.37,17.56,9.9,16.19,11,14.7L11,21z",
+        ramp_left: "M13,21h-2V6.83L9.41,8.41L8,7l4-4l4,4l-1.41,1.41L13,6.83V9c0,4.27,4.03,7.13,6,8.27l-1.46,1.46 c-1.91-1.16-3.44-2.53-4.54-4.02L13,21z",
+        roundabout: "M 21.896702,16.807279 c -0.616921,-1.781843 -1.233842,-3.563685 -1.850763,-5.345528 -1.781843,0.616921 -3.563686,1.233841 -5.345529,1.850762 0.899536,0.436846 1.799073,0.873692 2.698609,1.310538 -1.11625,2.404166 -3.955561,3.812593 -6.545968,3.267515 -0.12287,0.655398 -0.245741,1.310795 -0.368611,1.966193 3.392477,0.709283 7.107172,-1.090998 8.636322,-4.204987 0.180625,-0.304366 0.638154,0.204973 0.942889,0.265315 0.611017,0.296731 1.222034,0.593461 1.833051,0.890192 z M 3.0679937,18.424041 c 1.8609148,0.304223 3.7218297,0.608445 5.5827445,0.912668 C 8.9549611,17.475794 9.2591839,15.61488 9.5634068,13.753965 8.7514802,14.337724 7.9395535,14.921484 7.1276269,15.505243 5.5430465,13.380359 5.6535648,10.212845 7.3644605,8.1929056 6.8462477,7.7732646 6.328035,7.3536235 5.8098222,6.9339825 3.573199,9.5815282 3.3913242,13.70547 5.4041365,16.531034 5.5860587,16.834627 4.9204584,16.995049 4.7225152,17.234472 4.171008,17.630995 3.6195009,18.027518 3.0679937,18.424041 Z M 11.169997,1.0313754 C 9.941056,2.4615011 8.712115,3.8916268 7.483174,5.3217525 c 1.4301257,1.228941 2.860251,2.4578821 4.290377,3.6868231 -0.07544,-0.99715 -0.150889,-1.9943 -0.226333,-2.99145 2.63923,-0.2459573 5.285628,1.4981573 6.118854,4.0107364 C 18.294206,9.8040536 18.922341,9.5802452 19.550475,9.3564368 18.455312,6.0681852 15.02962,3.7650111 11.569211,4.0115874 11.215296,4.0087627 11.425023,3.3570159 11.323735,3.0633399 11.272489,2.3860184 11.221243,1.7086969 11.169997,1.0313754 Z"
+    }
+
+    var svgElement = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+    svgElement.setAttribute('viewBox', "0 0 24 24");
+    svgElement.setAttribute('height', "24");
+
+    if (icons[icon].startsWith("M")) {
+        var iconElement = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+        iconElement.setAttribute("d", icons[icon]);
+        iconElement.setAttribute('fill', 'currentColor');
+        svgElement.appendChild(iconElement);
+    } else {
+        var iconElement = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
+        iconElement.setAttribute("points", icons[icon]);
+        iconElement.setAttribute('fill', 'currentColor');
+        svgElement.appendChild(iconElement);
+    }
+
+    element.appendChild(svgElement);
+}
+
+
+function toPrettyTime(seconds) {
+
+    if (seconds === 0) {
+        return '0'
+    }
+
+    if (seconds < 120) {
+        return seconds + 's';
+    }
+
+    let hours = Math.floor(seconds / 3600);
+    let minutes = Math.floor((seconds - (hours * 3600)) / 60);
+
+
+    if (!hours) {
+        return minutes + 'min';
+    }
+
+    if (!minutes) {
+        return hours + 'h';
+    }
+
+    return hours + 'h ' + minutes + 'm';
+}
+
+function toPrettyDistance(value, isMetric) {
+    if (!isMetric) {
+
+        if (value >= 0.1) {
+            return `${value.toFixed(1)}mi`
+        }
+
+        return `${Math.round(value * 5280)}feet`
+    }
+
+    if (value > 10000) {
+        return `${(value / 1000).toFixed(1)}km`
+    }
+
+    if (value > 5000) {
+        return `${(value / 1000).toFixed(1)}km`
+    }
+
+    return `${Math.round(value)}m`
+}
+
+function printInstructions() {
+  let printWindow = window.open(
+    "",
+    "printwindow",
+    "left=0,top=0,width=1200,height=600,toolbar=0,scrollbars=0,status=0"
+  );
+  printWindow.document.write(
+    "<html><head><title>Print Driving Directions - Powered by Geoapify</title><body></body></html>"
+  );
+
+  const arrStyleSheets = document.getElementsByTagName("link");
+  for (var i = 0; i < arrStyleSheets.length; i++) {
+    printWindow.document.head.appendChild(arrStyleSheets[i].cloneNode(true));
+  }
+  var arrStyle = document.getElementsByTagName("style");
+  for (var i = 0; i < arrStyle.length; i++) {
+    printWindow.document.head.appendChild(arrStyle[i].cloneNode(true));
+  }
+
+  const mapPreview = document.getElementById("route-preview-container");
+  printWindow.document.body.appendChild(mapPreview.cloneNode(true));
+
+  const elevationCanvas = document.getElementById("route-elevation-chart");
+  const destCanvas = document.createElement("canvas");
+
+  destCanvas.width = elevationCanvas.width;
+  destCanvas.height = elevationCanvas.height;
+  destCanvas.style.height='100%';
+
+  const destinationCtx = destCanvas.getContext("2d");
+  destinationCtx.drawImage(elevationCanvas, 0, 0);
+
+  const destCanvasContainer = document.createElement("div");
+  destCanvasContainer.classList.add("elevation-profile-container");
+  destCanvasContainer.appendChild(destCanvas);
+
+  printWindow.document.body.appendChild(destCanvasContainer);
+
+  let instructions = document.getElementById("instructions");
+  printWindow.document.body.appendChild(instructions.cloneNode(true));
+
+  printWindow.document.close();
+  printWindow.focus();
+  //printWindow.print();
+  //printWindow.close();
+}
+window.printInstructions = printInstructions;</script>
+</body>
+</html>
