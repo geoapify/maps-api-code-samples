@@ -22,7 +22,7 @@ This code sample demonstrates how to generate **Printable Route Directions** usi
 - [Geoapify Static Maps API](https://www.geoapify.com/static-maps-api/)
 
 #### Demo:
-Explore the demo: [Printable Route Directions Demo](https://html-preview.github.io/?https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/printable-route-directions/demo.html)
+Explore the demo: [Printable Route Directions Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
 
 ---
 

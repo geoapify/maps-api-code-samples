@@ -13,7 +13,7 @@ This combination of dynamic and static content allows users to interact with the
 
 ## Demo
 
-You can see the code sample in action here: [Demo Link](https://html-preview.github.io/?https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/printable-route-directions/demo.html)
+You can see the code sample in action here: [Demo Link](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
 
 ## About the Code Sample
 
