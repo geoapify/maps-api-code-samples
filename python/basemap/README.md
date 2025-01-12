@@ -2,6 +2,8 @@
 
 This project demonstrates how to create interactive maps using the Python library **Folium**. Folium is a powerful tool for building maps with markers, popups, and other interactive features.
 
+![Folium basemap](basemap-folium.jpg)
+
 ---
 
 ## **Requirements**
