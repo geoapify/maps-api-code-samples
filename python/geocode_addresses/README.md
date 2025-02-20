@@ -2,7 +2,7 @@
 
 This project demonstrates how to use the [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/) to geocode addresses from an input file and save the results in NDJSON format.
 
----
+
 ## **Features**
 - Uses Geoapify's Geocoding API to retrieve latitude/longitude for addresses.
 - Supports batch processing of addresses from an input file.
@@ -57,7 +57,7 @@ Whitney Museum of American Art, 99 Gansevoort St, New York, NY 10014, USA
 Solomon R. Guggenheim Museum, 1071 5th Ave, New York, NY 10128, USA
 Brooklyn Museum, 200 Eastern Pkwy, Brooklyn, NY 11238, USA
 ```
----
+
 
 ## **Running the Example**
 
@@ -74,7 +74,7 @@ python geocode_addresses.py --api_key 27a3c5f9a6754da28283d1995edb9467 --input i
 - `--output` (required): Output filename (e.g., `output.ndjson`).
 - `--country_code` (optional): Restrict geocoding results to a specific country (e.g., `us`, `de`, `fr`).
 
----
+
 
 ## **Code Explanation**
 
@@ -140,14 +140,14 @@ if __name__ == "__main__":
     main()
 ```
 
----
+
 
 ## **Output**
 - The script generates an NDJSON (`.ndjson`) file with geocoding results.
 - Each line in the file is a JSON object containing location data.
 - If an address is not found, an error message is logged.
 
----
+
 
 ## **Example Geocoding API Call**
 
@@ -248,7 +248,7 @@ https://api.geoapify.com/v1/geocode/search?text=The%20Metropolitan%20Museum%20of
 }
 ```
 
----
+
 
 ## **Error Handling**
 - Handles HTTP errors, including invalid API keys and server failures.

@@ -2,7 +2,7 @@
 
 This project demonstrates how to use the [Geoapify Maps Tiles](https://www.geoapify.com/map-tiles/) to display an interactive raster map using [folium](https://pypi.org/project/folium/). The map includes customizable styles, zoom levels, and center coordinates.
 
----
+
 
 ## **Features**
 - Uses Geoapify Maps API for high-quality map tiles.
@@ -46,7 +46,7 @@ Install the required Python libraries using pip:
 pip install folium requests
 ```
 
----
+
 
 ## **Running the Example**
 
@@ -64,7 +64,7 @@ python interactive_map.py --style osm-bright --zoom 12 --lat 48.8566 --lon 2.352
 - `--lat` (optional, default: `48.8584`): Latitude for the map center.
 - `--lon` (optional, default: `2.2945`): Longitude for the map center.
 
----
+
 
 ## Code Explanation
 
@@ -135,7 +135,7 @@ def create_map(map_style, zoom, lat, lon, api_key):
 
 This function allows users to create a customizable interactive map with Geoapify tiles, supporting different styles and zoom levels.
 
----
+
 
 ## **Output**
 - The script generates a `map.html` file.

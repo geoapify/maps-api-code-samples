@@ -2,7 +2,7 @@
 
 This project demonstrates how to use the Geoapify [Reverse Geocoding API](https://www.geoapify.com/reverse-geocoding-api/) to retrieve address details from latitude and longitude coordinates.
 
----
+
 
 ## **Features**
 
@@ -45,7 +45,7 @@ Install the required Python libraries using pip:
 pip install requests
 ```
 
----
+
 
 ## **Running the Reverse Geocoding Example**
 
@@ -66,7 +66,7 @@ python reverse_geocode.py --api_key 27a3c5f9a6754da28283d1995edb9467 --input inp
 - `--type` (optional, default: `address`): Type of result to retrieve (`address`, `street`, `city`, `postcode`, `county`, `state`).
 - `--output_format` (optional, default: `json`): Format of response (`json` or `geojson`).
 
----
+
 
 ## **Example Input File (Coordinates)**
 
@@ -80,7 +80,7 @@ Below is a sample list of latitude and longitude coordinates that can be used as
 34.052235, -118.243683
 ```
 
----
+
 
 ## **Reverse Geocoding API Call**
 
@@ -165,9 +165,14 @@ https://api.geoapify.com/v1/geocode/reverse?lat=40.779437&lon=-73.963244&format=
 }
 ```
 
-### **Notes**
-- Replace `{LAT}` and `{LON}` with the desired coordinates.
-- Replace `{API_KEY}` with your valid Geoapify API key.
-- Use `format=json` to get the response in JSON format.
+## **Error Handling**
+- Handles HTTP errors, including invalid API keys and server failures.
+- Logs warnings when an address cannot be geocoded.
+- Ensures the program does not crash due to individual request failures.
 
+## **Notes**
+- Ensure that you have a valid [Geoapify API key](https://www.geoapify.com/) before running the script.
+- The API supports different country filters to improve geocoding accuracy.
 
+## **License**
+This project is licensed under the MIT License.
