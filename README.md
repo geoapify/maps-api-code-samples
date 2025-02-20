@@ -6,7 +6,7 @@ Welcome to the **Geoapify Location Platform Code Samples** repository! This proj
 
 ## Available Code Samples
 
-### **1. Printable Route Directions (Available Now)**
+### **1. JavaScript: Printable Route Directions**
 
 #### Description:
 This code sample demonstrates how to generate **Printable Route Directions** using Geoapify's Routing API and Static Maps API with JavaScript and HTML. It includes interactive features and static content generation for detailed route instructions.
@@ -23,6 +23,46 @@ This code sample demonstrates how to generate **Printable Route Directions** usi
 
 #### Demo:
 Explore the demo: [Printable Route Directions Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
+
+
+### **2. Python: Create Map Example**
+
+#### Description:
+This sample demonstrates how to generate an interactive map using the Geoapify Maps API with Python and Folium.
+
+#### Features:
+- Custom map styles using Geoapify API.
+- Interactive markers for enhanced user experience.
+- Dynamic zoom and center capabilities.
+
+#### APIs Used:
+- [Geoapify Maps Tiles](https://www.geoapify.com/map-tiles/)
+
+### **3. Python: Batch Geocode Example**
+
+#### Description:
+This example shows how to perform forward geocoding using the Geoapify Geocoding API to obtain latitude and longitude from addresses.
+
+#### Features:
+- Batch geocoding support.
+- Country filtering for improved accuracy.
+- NDJSON output format.
+
+#### APIs Used:
+- [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/)
+
+### **4. Python: Reverse Geocode Example**
+
+#### Description:
+This example demonstrates how to perform reverse geocoding to retrieve addresses from latitude and longitude coordinates using the Geoapify API.
+
+#### Features:
+- Batch processing of coordinates.
+- Configurable response format (`json` or `geojson`).
+- Country filtering for improved results.
+
+#### APIs Used:
+- [Geoapify Reverse Geocoding API](https://www.geoapify.com/reverse-geocoding-api/)
 
 ---
 
