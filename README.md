@@ -64,7 +64,50 @@ This example demonstrates how to perform reverse geocoding to retrieve addresses
 #### APIs Used:
 - [Geoapify Reverse Geocoding API](https://www.geoapify.com/reverse-geocoding-api/)
 
----
+Sure! Here's how you can write similar sections for the **Address Standardization** and **Address Validation** examples in the same style as your Reverse Geocode Example:
+
+
+### **5. Python: Address Standardization Example**
+
+#### Description:
+This example demonstrates how to use the Geoapify Geocoding API to geocode addresses and generate standardized address strings based on a custom format.
+
+#### Features:
+- Batch geocoding of address lists.
+- Flexible address formatting using placeholders (e.g., `{street}`, `{city}`, `{postcode}`).
+- Output in both NDJSON (raw results) and CSV (standardized format).
+
+#### APIs Used:
+- [Geoapify Forward Geocoding API](https://www.geoapify.com/geocoding-api/)
+
+### **6. Python: Address Validation Example**
+
+#### Description:
+This example shows how to validate address accuracy using confidence levels returned by the Geoapify Geocoding API.
+
+#### Features:
+- Batch address validation with detailed confidence analysis.
+- Classification into `CONFIRMED`, `PARTIALLY_CONFIRMED`, and `NOT_CONFIRMED`.
+- Output CSV includes validation results and reasons for uncertainty.
+
+#### APIs Used:
+- [Geoapify Forward Geocoding API](https://www.geoapify.com/geocoding-api/)
+
+### **7. Python: Isoline Visualization Example**
+
+#### Description:  
+This example demonstrates how to use the Geoapify Isoline API to generate and display **isochrones** (time-based) or **isodistances** (distance-based) as interactive polygons on a map using **Folium**.
+
+#### Features:
+- Visualizes travel range from a specific location by time or distance.
+- Supports multiple travel modes (`drive`, `walk`, `bicycle`, etc.).
+- Accepts advanced options like traffic modeling, route optimization, and avoidance.
+- Saves and opens an interactive HTML map with isoline overlays.
+
+#### APIs Used:
+- [Geoapify Isoline API](https://www.geoapify.com/isoline-api/)
+- [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)  
+- [Folium Library](https://python-visualization.github.io/folium/)
 
 ## Upcoming Code Samples
 

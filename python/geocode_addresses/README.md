@@ -65,7 +65,7 @@ Run the script to generate an output file:
 
 ```bash
 cd geocode_addresses
-python geocode_addresses.py --api_key 27a3c5f9a6754da28283d1995edb9467 --input input.txt --output output.ndjson --country_code gb
+python geocode_addresses.py --api_key YOUR_API_KEY --input input.txt --output output.ndjson --country_code gb
 ```
 
 ### **Command-line Arguments**

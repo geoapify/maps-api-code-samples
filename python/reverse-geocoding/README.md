@@ -53,7 +53,7 @@ Run the script to generate an output file:
 
 ```bash
 cd reverse-geocoding
-python reverse_geocode.py --api_key 27a3c5f9a6754da28283d1995edb9467 --input input.txt --output output.ndjson --order latlon
+python reverse_geocode.py --api_key YOUR_API_KEY --input input.txt --output output.ndjson --order latlon
 ```
 
 ### **Command-line Arguments**
