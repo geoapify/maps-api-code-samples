@@ -2,11 +2,9 @@
 
 Welcome to the **Geoapify Location Platform Code Samples** repository! This project provides a growing collection of code samples and demos showcasing how to work with Geoapify's powerful geospatial APIs. Whether you're building mapping applications, calculating routes, or integrating geocoding, these samples will help you get started quickly.
 
----
-
 ## Available Code Samples
 
-### **1. JavaScript: [Printable Route Directions](/tree/main/javascript/printable-route-directions)**
+### **1. JavaScript: [Printable Route Directions](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/printable-route-directions)**
 
 #### Description:
 This code sample demonstrates how to generate **Printable Route Directions** using Geoapify's Routing API and Static Maps API with JavaScript and HTML. It includes interactive features and static content generation for detailed route instructions.
@@ -24,8 +22,7 @@ This code sample demonstrates how to generate **Printable Route Directions** usi
 #### Demo:
 Explore the demo: [Printable Route Directions Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
 
-
-### **2. Python: [Create Map Example](/tree/main/python/create-a-map)**
+### **2. Python: [Create Map Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/create-a-map)**
 
 #### Description:
 This sample demonstrates how to generate an interactive map using the Geoapify Maps API with Python and Folium.
@@ -38,7 +35,7 @@ This sample demonstrates how to generate an interactive map using the Geoapify M
 #### APIs Used:
 - [Geoapify Maps Tiles](https://www.geoapify.com/map-tiles/)
 
-### **3. Python: [Batch Geocode Example](/tree/main/python/geocode_addresses)**
+### **3. Python: [Batch Geocode Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/geocode_addresses)**
 
 #### Description:
 This example shows how to perform forward geocoding using the Geoapify Geocoding API to obtain latitude and longitude from addresses.
@@ -51,7 +48,7 @@ This example shows how to perform forward geocoding using the Geoapify Geocoding
 #### APIs Used:
 - [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/)
 
-### **4. Python: [Reverse Geocode Example](/tree/main/python/reverse-geocoding)**
+### **4. Python: [Reverse Geocode Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/reverse-geocoding)**
 
 #### Description:
 This example demonstrates how to perform reverse geocoding to retrieve addresses from latitude and longitude coordinates using the Geoapify API.
@@ -67,7 +64,7 @@ This example demonstrates how to perform reverse geocoding to retrieve addresses
 Sure! Here's how you can write similar sections for the **Address Standardization** and **Address Validation** examples in the same style as your Reverse Geocode Example:
 
 
-### **5. Python: Address Standardization Example**
+### **5. Python: [Address Standardization Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/address-standardization)**
 
 #### Description:
 This example demonstrates how to use the Geoapify Geocoding API to geocode addresses and generate standardized address strings based on a custom format.
@@ -80,7 +77,7 @@ This example demonstrates how to use the Geoapify Geocoding API to geocode addre
 #### APIs Used:
 - [Geoapify Forward Geocoding API](https://www.geoapify.com/geocoding-api/)
 
-### **6. Python: Address Validation Example**
+### **6. Python: [Address Validation Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/address-validation)**
 
 #### Description:
 This example shows how to validate address accuracy using confidence levels returned by the Geoapify Geocoding API.
@@ -93,7 +90,7 @@ This example shows how to validate address accuracy using confidence levels retu
 #### APIs Used:
 - [Geoapify Forward Geocoding API](https://www.geoapify.com/geocoding-api/)
 
-### **7. Python: Isoline Visualization Example**
+### **7. Python: [Isoline Visualization Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/calculate-and-visualize-isoline)**
 
 #### Description:  
 This example demonstrates how to use the Geoapify Isoline API to generate and display **isochrones** (time-based) or **isodistances** (distance-based) as interactive polygons on a map using **Folium**.
@@ -108,6 +105,27 @@ This example demonstrates how to use the Geoapify Isoline API to generate and di
 - [Geoapify Isoline API](https://www.geoapify.com/isoline-api/)
 - [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)  
 - [Folium Library](https://python-visualization.github.io/folium/)
+
+
+### **8. Python: [Display Geocoded Addresses with Clustering and Confidence Coloring](https://github.com/geoapify/maps-api-code-samples/tree/main/python/show-addresses-on-a-map)**
+
+#### Description:  
+This example demonstrates how to display **geocoded addresses** on a Folium map using data from Geoapify. It supports **marker clustering**, **interactive popups**, and **confidence-based color coding**. Optionally, you can enable **custom markers** using the Geoapify Map Markers API.
+
+#### Features:
+- Reads geocoded data from an NDJSON file.
+- Adds individual markers with address popups.
+- Optionally clusters nearby markers with `MarkerCluster`.
+- Colors markers based on `rank.confidence` value.
+- Supports custom marker icons via Geoapify Map Markers API.
+- Automatically adjusts map zoom to fit all locations.
+- Opens the result in a browser as an interactive HTML map.
+
+#### APIs Used:
+- [Geoapify Map Markers API](https://apidocs.geoapify.com/playground/icon/)
+- [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)  
+- [Folium Library](https://python-visualization.github.io/folium/)  
+- [Folium MarkerCluster Plugin](https://python-visualization.github.io/folium/latest/user_guide/plugins/marker_cluster.html)
 
 ## Upcoming Code Samples
 
@@ -132,8 +150,6 @@ We plan to expand this repository with code samples in various programming langu
 5. **Multi-Language Code Samples:**
    - Examples in **JavaScript**, **Python**, **Node.js**, **Java**, **C#**, and more.
 
----
-
 ## How to Use
 
 Each code sample includes:
@@ -143,13 +159,9 @@ Each code sample includes:
 
 Stay tuned for updates as we add more samples!
 
----
-
 ## About Geoapify
 
 The [Geoapify Location Platform](https://www.geoapify.com) provides APIs and tools for geospatial applications, including geocoding, routing, isochrones, POI search, and map generation. Its flexible APIs are perfect for developers building location-based services or GIS solutions.
-
----
 
 ## Feedback and Contributions
 
