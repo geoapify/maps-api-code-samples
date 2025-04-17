@@ -4,6 +4,8 @@ import webbrowser
 import folium
 import requests
 
+# Define base URL for Geoapify
+BASE_MAP_TILE_URL = "https://maps.geoapify.com/v1/tile/{map_style}/{{z}}/{{x}}/{{y}}@2x.png?apiKey={api_key}"
 
 def fetch_isoline(lat, lon,
                   type_, mode, range_,
@@ -42,9 +44,22 @@ def fetch_isoline(lat, lon,
         exit(1)
 
 
-def render_map(lat, lon, isoline_data, output_file):
+def render_map(lat, lon, isoline_data, output_file, api_key):
     """Render isoline on a Folium map."""
     m = folium.Map(location=[lat, lon], zoom_start=13)
+
+    # Construct the tile URL with the selected map style and API Key
+    tile_url = BASE_MAP_TILE_URL.format(map_style="osm-bright-grey", api_key=api_key)
+
+    # Add the Geoapify raster tiles to the map
+    folium.TileLayer(
+        tiles=tile_url,
+        name='Geoapify Map',
+        attr="""Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> 
+        | <a href="https://openmaptiles.org/" rel="nofollow" target="_blank">© OpenMapTiles</a> contributors""",
+        overlay=True,
+        control=True
+    ).add_to(m)
 
     # Extract coordinates and type from GeoJSON, skip empty data
     if "features" in isoline_data and len(isoline_data["features"]) > 0:
@@ -104,7 +119,7 @@ def main():
         )
 
         # Render the map
-        render_map(args.lat, args.lon, isoline_data, args.output)
+        render_map(args.lat, args.lon, isoline_data, args.output, args.api_key)
 
     except Exception as e:
         print(f"Error: {e}")

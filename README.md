@@ -6,7 +6,7 @@ Welcome to the **Geoapify Location Platform Code Samples** repository! This proj
 
 ## Available Code Samples
 
-### **1. JavaScript: Printable Route Directions**
+### **1. JavaScript: [Printable Route Directions](/tree/main/javascript/printable-route-directions)**
 
 #### Description:
 This code sample demonstrates how to generate **Printable Route Directions** using Geoapify's Routing API and Static Maps API with JavaScript and HTML. It includes interactive features and static content generation for detailed route instructions.
@@ -25,7 +25,7 @@ This code sample demonstrates how to generate **Printable Route Directions** usi
 Explore the demo: [Printable Route Directions Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
 
 
-### **2. Python: Create Map Example**
+### **2. Python: [Create Map Example](/tree/main/python/create-a-map)**
 
 #### Description:
 This sample demonstrates how to generate an interactive map using the Geoapify Maps API with Python and Folium.
@@ -38,7 +38,7 @@ This sample demonstrates how to generate an interactive map using the Geoapify M
 #### APIs Used:
 - [Geoapify Maps Tiles](https://www.geoapify.com/map-tiles/)
 
-### **3. Python: Batch Geocode Example**
+### **3. Python: [Batch Geocode Example](/tree/main/python/geocode_addresses)**
 
 #### Description:
 This example shows how to perform forward geocoding using the Geoapify Geocoding API to obtain latitude and longitude from addresses.
@@ -51,7 +51,7 @@ This example shows how to perform forward geocoding using the Geoapify Geocoding
 #### APIs Used:
 - [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/)
 
-### **4. Python: Reverse Geocode Example**
+### **4. Python: [Reverse Geocode Example](/tree/main/python/reverse-geocoding)**
 
 #### Description:
 This example demonstrates how to perform reverse geocoding to retrieve addresses from latitude and longitude coordinates using the Geoapify API.

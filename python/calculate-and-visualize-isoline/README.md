@@ -3,6 +3,8 @@
 ## Description
 This project demonstrates how to generate and display an **isochrone** (time-based isoline) or **isodistance** (distance-based isoline) on an interactive map using the [Geoapify Isoline API](https://www.geoapify.com/isoline-api/) and Folium in Python.
 
+![60-min dring Isochrone example](https://github.com/geoapify/maps-api-code-samples/blob/main/python/calculate-and-visualize-isoline/isochrone-driving-60min.png?raw=true)
+
 ## Requirements
 - Python 3.11 or higher
 - pip
@@ -31,11 +33,15 @@ pip install folium requests
 
 ### For isochrone:
 ```bash
+cd calculate-and-visualize-isoline
+
 python show_isoline.py --lat 28.293067 --lon -81.550409 --type time --mode drive --range 900 --output my_map.html --api_key YOUR_API_KEY
 ```
 
 ### For isodistance:
 ```bash
+cd calculate-and-visualize-isoline
+
 python show_isoline.py --lat 40.712776 --lon -74.005974 --type distance --mode walk --range 2000 --traffic approximated --route_type short --api_key YOUR_API_KEY
 ```
 
@@ -128,9 +134,22 @@ def fetch_isoline(lat, lon,
 ### 2. `render_map(...)`
 
 ```python
-def render_map(lat, lon, isoline_data, output_file):
+def render_map(lat, lon, isoline_data, output_file, api_key):
     """Render isoline on a Folium map."""
     m = folium.Map(location=[lat, lon], zoom_start=13)
+
+    # Construct the tile URL with the selected map style and API Key
+    tile_url = BASE_MAP_TILE_URL.format(map_style="osm-bright-grey", api_key=api_key)
+
+    # Add the Geoapify raster tiles to the map
+    folium.TileLayer(
+        tiles=tile_url,
+        name='Geoapify Map',
+        attr="""Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> 
+        | <a href="https://openmaptiles.org/" rel="nofollow" target="_blank">© OpenMapTiles</a> contributors""",
+        overlay=True,
+        control=True
+    ).add_to(m)
 
     # Extract coordinates and type from GeoJSON, skip empty data
     if "features" in isoline_data and len(isoline_data["features"]) > 0:
@@ -153,6 +172,7 @@ def render_map(lat, lon, isoline_data, output_file):
 - **Purpose**: Visualizes the isoline data using [Folium](https://python-visualization.github.io/folium/).
 - **Features**:
   - Initializes a `folium.Map` centered on the given coordinates.
+  - Adds a `TileLayer`using [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/). 
   - Checks for valid isoline data.
   - Uses `folium.GeoJson()` to display the polygon.
     - Style is dynamically set:
