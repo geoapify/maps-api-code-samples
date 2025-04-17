@@ -127,6 +127,25 @@ This example demonstrates how to display **geocoded addresses** on a Folium map 
 - [Folium Library](https://python-visualization.github.io/folium/)  
 - [Folium MarkerCluster Plugin](https://python-visualization.github.io/folium/latest/user_guide/plugins/marker_cluster.html)
 
+### **9. Python: [Fetch Places with Grid and Pagination](https://github.com/geoapify/maps-api-code-samples/tree/main/python/query-points-of-interest-with-places-api)**
+
+#### Description:  
+This example demonstrates how to fetch **places data** from the Geoapify Places API for a given bounding box. It divides large areas into smaller grid cells (if needed), handles **pagination**, and writes results in **NDJSON format**.
+
+#### Features:
+- Accepts a bounding box and optional place categories.
+- Divides the area into grid cells ≤ 5 km using lat/lon conversion.
+- Handles pagination when more than 200 results are returned.
+- Uses `aiohttp` + `asyncio` for efficient parallel requests.
+- Implements request rate-limiting (5 RPS) to comply with Geoapify Free Plan.
+- Outputs place `properties` in newline-delimited JSON format (NDJSON).
+
+#### APIs Used:
+- [Geoapify Places API](https://www.geoapify.com/places-api/)
+- [API Playground – Places](https://apidocs.geoapify.com/playground/places/)
+- [Asyncio](https://docs.python.org/3/library/asyncio.html), [Aiohttp](https://docs.aiohttp.org/)
+
+
 ## Upcoming Code Samples
 
 We plan to expand this repository with code samples in various programming languages, demonstrating different Geoapify APIs, including:
@@ -165,6 +184,6 @@ The [Geoapify Location Platform](https://www.geoapify.com) provides APIs and too
 
 ## Feedback and Contributions
 
-We welcome feedback and contributions to improve this repository. If you have questions, suggestions, or would like to share your Geoapify-based project, feel free to reach out!
+We welcome feedback and contributions to improve this repository. If you have questions, suggestions, or would like to share your Geoapify-based project, feel free to [reach out](mailto:info@geoapify.com)!
 
 Stay updated as we expand this repository to include even more Geoapify API use cases.
