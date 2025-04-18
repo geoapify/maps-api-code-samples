@@ -3,7 +3,7 @@
 ## Description
 This project demonstrates how to generate and display an **isochrone** (time-based isoline) or **isodistance** (distance-based isoline) on an interactive map using the [Geoapify Isoline API](https://www.geoapify.com/isoline-api/) and Folium in Python.
 
-![60-min dring Isochrone example](https://github.com/geoapify/maps-api-code-samples/blob/main/python/calculate-and-visualize-isoline/isochrone-driving-60min.png?raw=true)
+![60-min driving Isochrone example](https://github.com/geoapify/maps-api-code-samples/blob/main/python/calculate-and-visualize-isoline/isochrone-driving-60min.png?raw=true)
 
 ## Requirements
 - Python 3.11 or higher
