@@ -146,6 +146,24 @@ This example demonstrates how to fetch **places data** from the Geoapify Places 
 - [Asyncio](https://docs.python.org/3/library/asyncio.html), [Aiohttp](https://docs.aiohttp.org/)
 
 
+### **8. Python: [Route Planner Result Processor](https://github.com/geoapify/maps-api-code-samples/tree/main/python/route-planner)**
+
+#### **Description:**  
+This example demonstrates how to process a request to the **Geoapify Route Planner API**, generate structured outputs for each agent, and visualize their assigned routes.
+
+#### **Features:**
+- Accepts a JSON request compatible with the Route Planner API.
+- Calls the **Route Planner API** and retrieves planned jobs and waypoints.
+- Creates **individual folders** for each agent:
+  - Saves `plan.json` with job and route details.
+  - Renders a **route map** using **Folium** and the **Routing API**.
+- Outputs an `issues.json` file listing any unassigned or problematic jobs.
+  
+#### **APIs Used:**
+- [Geoapify Route Planner API](https://www.geoapify.com/route-planner/)
+- [Geoapify Routing API](https://www.geoapify.com/routing-api/)
+- [Folium Library](https://python-visualization.github.io/folium/)
+
 ## Upcoming Code Samples
 
 We plan to expand this repository with code samples in various programming languages, demonstrating different Geoapify APIs, including:
