@@ -24,7 +24,7 @@ def reverse_geocode(api_key, lat, lon, country_filter, result_type, output_forma
     if country_filter:
         params['filter'] = 'countrycode:' + country_filter
     if result_type:
-        params['result_type'] = result_type
+        params['type'] = result_type
     try:
         response = requests.get(GEOAPIFY_API_URL, params=params)
         if response.status_code == 200:
