@@ -146,7 +146,7 @@ This example demonstrates how to fetch **places data** from the Geoapify Places 
 - [Asyncio](https://docs.python.org/3/library/asyncio.html), [Aiohttp](https://docs.aiohttp.org/)
 
 
-### **8. Python: [Route Planner Result Processor](https://github.com/geoapify/maps-api-code-samples/tree/main/python/route-planner)**
+### **10. Python: [Route Planner Result Processor](https://github.com/geoapify/maps-api-code-samples/tree/main/python/route-planner)**
 
 #### **Description:**  
 This example demonstrates how to process a request to the **Geoapify Route Planner API**, generate structured outputs for each agent, and visualize their assigned routes.
@@ -163,6 +163,42 @@ This example demonstrates how to process a request to the **Geoapify Route Plann
 - [Geoapify Route Planner API](https://www.geoapify.com/route-planner/)
 - [Geoapify Routing API](https://www.geoapify.com/routing-api/)
 - [Folium Library](https://python-visualization.github.io/folium/)
+
+
+### **11. JavaScript(Node.js): [Batch Geocoding with Rate Limiting](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/geocoding-with-RPS-limit-respect)**
+
+#### **Description:**  
+This example demonstrates how to geocode a large number of addresses using the **Geoapify Geocoding API**, while automatically respecting API rate limits with the help of the [`@geoapify/request-rate-limiter`](https://www.npmjs.com/package/@geoapify/request-rate-limiter) package.
+
+#### **Features:**
+- Reads addresses from a plain text file (`input.txt`), one per line.
+- Sends geocoding requests with a limit of **5 requests per second** (default for Free plan).
+- Outputs results to:
+  - `results.json` — full API response per address.
+- Logs geocoding progress and errors in real-time.
+- Built with **ES modules**, `node-fetch`, and Geoapify’s official rate limiter.
+
+#### **APIs Used:**
+- [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/)
+- [@geoapify/request-rate-limiter](https://www.npmjs.com/package/@geoapify/request-rate-limiter)
+
+### **12. JavaScript(Node.js): [Batch Reverse Geocoding](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/reverse-geocoding-lat-lon-to-address)**
+
+#### **Description:**  
+This example demonstrates how to perform batch **reverse geocoding** using the **Geoapify Reverse Geocoding API**. It reads a list of latitude/longitude pairs from a text file, resolves them into addresses, and saves the output as structured JSON — all while respecting rate limits.
+
+#### **Features:**
+- Reads coordinate pairs (`lat,lon`) from `input.txt`.
+- Calls the **Geoapify Reverse Geocoding API** for each location.
+- Uses [`@geoapify/request-rate-limiter`](https://www.npmjs.com/package/@geoapify/request-rate-limiter) to automatically respect the 5 RPS API limit.
+- Logs progress and handles errors gracefully.
+- Saves results to a `results.json` file in structured format.
+
+#### **APIs Used:**
+- [Geoapify Reverse Geocoding API](https://www.geoapify.com/reverse-geocoding-api/)
+- [@geoapify/request-rate-limiter](https://www.npmjs.com/package/@geoapify/request-rate-limiter)
+- [node-fetch](https://www.npmjs.com/package/node-fetch)
+
 
 ## Upcoming Code Samples
 

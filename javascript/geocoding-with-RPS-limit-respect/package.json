@@ -1,0 +1,25 @@
+{
+  "name": "geocoding-with-rps-limit-respect",
+  "version": "1.0.0",
+  "main": "geocode.js",
+  "type": "module",
+  "scripts": {
+    "start": "node geocode.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "geocoding",
+    "geoapify",
+    "batch",
+    "rate-limit",
+    "node.js",
+    "api"
+  ],
+  "author": "Geoapify",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@geoapify/request-rate-limiter": "^1.0.1",
+    "node-fetch": "^3.3.2"
+  }
+}

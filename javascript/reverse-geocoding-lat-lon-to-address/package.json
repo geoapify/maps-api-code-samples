@@ -1,0 +1,28 @@
+{
+    "name": "geoapify-reverse-geocoding-batch",
+    "version": "1.0.0",
+    "description": "Batch reverse geocoding using the Geoapify API and @geoapify/request-rate-limiter with rate limit respect.",
+    "type": "module",
+    "main": "reverse-geocode.js",
+    "scripts": {
+      "start": "node reverse-geocode.js"
+    },
+    "keywords": [
+      "geoapify",
+      "reverse-geocoding",
+      "batch",
+      "rate-limiter",
+      "node.js",
+      "api"
+    ],
+    "author": "Geoapify",
+    "license": "MIT",
+    "dependencies": {
+      "@geoapify/request-rate-limiter": "^1.0.1",
+      "node-fetch": "^3.3.2"
+    },
+    "engines": {
+      "node": ">=16.0.0"
+    }
+  }
+  
