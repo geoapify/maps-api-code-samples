@@ -2,7 +2,6 @@
 ![License](https://img.shields.io/github/license/geoapify/maps-api-code-samples)
 ![GitHub Repo Stars](https://img.shields.io/github/stars/geoapify/maps-api-code-samples?style=social)
 
-
 Welcome to the **Geoapify Location Platform Code Samples** repository! This project provides a growing collection of code samples and demos showcasing how to work with Geoapify's powerful geospatial APIs. Whether you're building mapping applications, calculating routes, or integrating geocoding, these samples will help you get started quickly.
 
 ## 🧩 Available Code Samples
@@ -28,6 +27,7 @@ Welcome to the **Geoapify Location Platform Code Samples** repository! This proj
 * [Fetch Places with Grid and Pagination](#python-fetch-places-with-grid-and-pagination)
 * [Route Planner Result Processor](#python-route-planner-result-processor)
 
+---
 
 ### JavaScript: [Printable Route Directions](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/printable-route-directions)
 
@@ -50,8 +50,6 @@ Uses JavaScript and HTML to call the Geoapify Routing API for route data and the
 **Demo:**  
 👉 [Printable Route Directions – Live Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
 
-[↑ Back to top](#table-of-contents)
-
 ---
 
 ### Node.js: [Batch Geocoding with Rate Limiting](https://github.com/geoapify/maps-api-code-samples/tree/main/node/geocoding-with-RPS-limit-respect)
@@ -73,6 +71,8 @@ Reads addresses from a text file and sends geocoding requests to the Geoapify AP
 - [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/)
 - [@geoapify/request-rate-limiter](https://www.npmjs.com/package/@geoapify/request-rate-limiter)
 
+---
+
 ### Node.js: [Batch Reverse Geocoding](https://github.com/geoapify/maps-api-code-samples/tree/main/node/reverse-geocoding-lat-lon-to-address)
 
 **What it does:**  
@@ -93,7 +93,6 @@ Reads coordinate pairs from a text file and uses the Geoapify Reverse Geocoding 
 - [@geoapify/request-rate-limiter](https://www.npmjs.com/package/@geoapify/request-rate-limiter)
 - [node-fetch](https://www.npmjs.com/package/node-fetch)
 
-[↑ Back to top](#table-of-contents)
 ---
 
 ### Python: [Create Map Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/create-a-map)
@@ -113,6 +112,8 @@ Uses Python and Folium to create a Leaflet-based map with custom tile styles fro
 **APIs used:**
 - [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)
 
+---
+
 ### Python: [Batch Geocode Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/geocode_addresses)
 
 **What it does:**  
@@ -129,6 +130,8 @@ Reads a list of addresses and sends them to the Geoapify Geocoding API. Optional
 **APIs used:**
 - [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/)
 
+---
+
 ### Python: [Reverse Geocode Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/reverse-geocoding)
 
 **What it does:**  
@@ -144,6 +147,8 @@ Processes a list of coordinate pairs and sends them to the Geoapify Reverse Geoc
 
 **APIs used:**
 - [Geoapify Reverse Geocoding API](https://www.geoapify.com/reverse-geocoding-api/)
+
+---
 
 ### Python: [Address Standardization Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/address-standardization)
 
@@ -162,6 +167,8 @@ Processes a batch of addresses using the Geoapify Geocoding API and applies a fo
 
 **APIs used:**
 - [Geoapify Forward Geocoding API](https://www.geoapify.com/geocoding-api/)
+
+---
 
 ### Python: [Address Validation Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/address-validation)
 
@@ -182,6 +189,8 @@ Performs batch geocoding of address data and evaluates the `rank.confidence` and
 **APIs used:**
 - [Geoapify Forward Geocoding API](https://www.geoapify.com/geocoding-api/)
 
+---
+
 ### Python: [Isoline Visualization Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/calculate-and-visualize-isoline)
 
 **What it does:**  
@@ -200,6 +209,8 @@ Uses the Geoapify Isoline API to calculate reachable areas from a starting point
 - [Geoapify Isoline API](https://www.geoapify.com/isoline-api/)
 - [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)
 - [Folium Library](https://python-visualization.github.io/folium/)
+
+---
 
 ### Python: [Display Geocoded Addresses with Clustering and Confidence Coloring](https://github.com/geoapify/maps-api-code-samples/tree/main/python/show-addresses-on-a-map)
 
@@ -224,6 +235,8 @@ Reads geocoded results from an NDJSON file and plots them on a Leaflet map using
 - [Folium Library](https://python-visualization.github.io/folium/)
 - [Folium MarkerCluster Plugin](https://python-visualization.github.io/folium/latest/user_guide/plugins/marker_cluster.html)
 
+---
+
 ### Python: [Fetch Places with Grid and Pagination](https://github.com/geoapify/maps-api-code-samples/tree/main/python/query-points-of-interest-with-places-api)
 
 **What it does:**  
@@ -246,6 +259,8 @@ Accepts a bounding box and optional filters, then divides the area into smaller 
 - [Asyncio](https://docs.python.org/3/library/asyncio.html)
 - [Aiohttp](https://docs.aiohttp.org/)
 
+---
+
 ### Python: [Route Planner Result Processor](https://github.com/geoapify/maps-api-code-samples/tree/main/python/route-planner)
 
 **What it does:**  
@@ -264,9 +279,6 @@ Accepts a JSON file describing agents, jobs, and shipments. It sends the request
 - [Geoapify Route Planner API](https://www.geoapify.com/route-planner/)
 - [Geoapify Routing API](https://www.geoapify.com/routing-api/)
 - [Folium Library](https://python-visualization.github.io/folium/)
-
-[↑ Back to top](#table-of-contents)
----
 
 ## 🚧 Upcoming Code Samples
 
