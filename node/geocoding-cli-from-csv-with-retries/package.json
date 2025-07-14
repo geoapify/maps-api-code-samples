@@ -1,0 +1,36 @@
+{
+  "name": "address-geocoder",
+  "version": "1.0.0",
+  "description": "Geocode addresses from CSV files using Geoapify API with rate limiting",
+  "main": "geocoder.js",
+  "bin": {
+    "geocode-addresses": "geocoder.js"
+  },
+  "scripts": {
+    "start": "node geocoder.js -k 93b8e26606dd485183dcdab30f239f81 -i sample-addresses.csv -o results.json -f json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "geocoding",
+    "geoapify",
+    "csv",
+    "address",
+    "location",
+    "coordinates",
+    "rate-limiting"
+  ],
+  "author": {
+    "name": "Geoapify GmbH",
+    "email": "info@geoapify.com",
+    "url": "https://geoapify.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@geoapify/request-rate-limiter": "^1.0.0",
+    "commander": "^11.0.0",
+    "csv-parser": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 

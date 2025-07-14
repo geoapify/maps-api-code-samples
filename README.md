@@ -14,6 +14,8 @@ Welcome to the **Geoapify Location Platform Code Samples** repository! This proj
 
 * [Batch Geocoding with Rate Limiting](#nodejs-batch-geocoding-with-rate-limiting)
 * [Batch Reverse Geocoding](#nodejs-batch-reverse-geocoding)
+* [Geocoding CLI from CSV with Retries](#nodejs-geocoding-cli-from-csv-with-retries)
+* [Reverse Geocoding CLI from CSV](#nodejs-reverse-geocoding-cli-from-csv)
 
 ### Python
 
@@ -92,6 +94,53 @@ Reads coordinate pairs from a text file and uses the Geoapify Reverse Geocoding 
 - [Geoapify Reverse Geocoding API](https://www.geoapify.com/reverse-geocoding-api/)
 - [@geoapify/request-rate-limiter](https://www.npmjs.com/package/@geoapify/request-rate-limiter)
 - [node-fetch](https://www.npmjs.com/package/node-fetch)
+
+---
+
+
+### Node.js: [Geocoding CLI from CSV with Retries](https://github.com/geoapify/maps-api-code-samples/tree/main/node/geocoding-cli-from-csv-with-retries)
+
+**What it does:**
+Performs batch geocoding of addresses from a CSV file using the Geoapify API, with support for retries and configurable output formats.
+
+**How it works:**
+Reads structured address data from a CSV file, builds address strings based on configurable column mappings, and sends requests to the Geoapify Geocoding API. It uses a rate limiter to stay within Free plan limits and includes retry logic for failed requests. The tool works both as a CLI and as a Node.js module.
+
+**Key features:**
+
+* Reads structured addresses from a CSV file (`Street`, `City`, `State`, `Country`, `PostalCode`)
+* Configurable column mapping and address formatting
+* Respects API rate limits (default: 5 requests per second)
+* Retries failed requests up to 3 times (configurable)
+* Supports multiple output formats: JSON, NDJSON, or console
+* Preserves input order and logs progress with timestamps
+* CLI and programmatic usage support
+
+**APIs used:**
+
+* [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/)
+* [@geoapify/request-rate-limiter](https://www.npmjs.com/package/@geoapify/request-rate-limiter)
+
+---
+### Node.js: [Reverse Geocoding CLI from CSV](https://github.com/geoapify/maps-api-code-samples/tree/main/node/batch-reverse-geocode-from-csv)
+
+**What it does:**  
+Reads a list of geographic coordinates from a CSV file and performs batch reverse geocoding using the Geoapify Reverse Geocoding API.
+
+**How it works:**  
+Coordinates (`lat`, `lon`) are read from the CSV, then the script sends reverse geocoding requests with built-in rate limiting. It retries failed lookups and saves the output in NDJSON, JSON, or console format.
+
+**Key features:**
+- Reads latitude/longitude pairs from a CSV file.
+- Customizable column mapping (e.g., `lat`, `lon` or `latitude`, `longitude`).
+- Respects rate limits using `@geoapify/request-rate-limiter`.
+- Supports automatic retry of failed requests (configurable max attempts).
+- Multiple output formats: `json`, `ndjson`, or `console`.
+- Preserves original row order and logs skipped/failed rows with reasons.
+
+**APIs used:**
+- [Geoapify Reverse Geocoding API](https://www.geoapify.com/reverse-geocoding-api/)
+- [@geoapify/request-rate-limiter](https://www.npmjs.com/package/@geoapify/request-rate-limiter)
 
 ---
 

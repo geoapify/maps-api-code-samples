@@ -1,0 +1,24 @@
+{
+  "name": "reverse-geocoder",
+  "version": "1.0.0",
+  "description": "Reverse geocode coordinates from CSV files using Geoapify API",
+  "main": "reverse-geocoder.js",
+  "scripts": {
+    "start": "node reverse-geocoder.js -k 93b8e26606dd485183dcdab30f239f81 -i sample-coordinates.csv -o results.json -f json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "geocoding",
+    "reverse-geocoding",
+    "geoapify",
+    "coordinates",
+    "csv"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@geoapify/request-rate-limiter": "^1.0.0",
+    "commander": "^9.0.0",
+    "csv-parser": "^3.0.0"
+  }
+} 
