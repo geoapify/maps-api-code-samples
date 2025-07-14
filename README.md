@@ -5,17 +5,6 @@
 
 Welcome to the **Geoapify Location Platform Code Samples** repository! This project provides a growing collection of code samples and demos showcasing how to work with Geoapify's powerful geospatial APIs. Whether you're building mapping applications, calculating routes, or integrating geocoding, these samples will help you get started quickly.
 
-## 📚 Table of Contents
-
-- [Available Code Samples](#available-code-samples)
-  - [JavaScript](#javascript)
-  - [Node.js](#nodejs)
-  - [Python](#python)
-- [Upcoming Code Samples](#upcoming-code-samples)
-- [How to Use](#how-to-use)
-- [About Geoapify](#about-geoapify)
-- [Feedback and Contributions](#feedback-and-contributions)
-
 ## 🧩 Available Code Samples
 
 ### JavaScript
@@ -62,6 +51,7 @@ Uses JavaScript and HTML to call the Geoapify Routing API for route data and the
 👉 [Printable Route Directions – Live Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
 
 [↑ Back to top](#table-of-contents)
+
 ---
 
 ### Node.js: [Batch Geocoding with Rate Limiting](https://github.com/geoapify/maps-api-code-samples/tree/main/node/geocoding-with-RPS-limit-respect)
