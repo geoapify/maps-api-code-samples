@@ -1,243 +1,333 @@
 # Geoapify Location Platform Code Samples
+![License](https://img.shields.io/github/license/geoapify/maps-api-code-samples)
+![GitHub Repo Stars](https://img.shields.io/github/stars/geoapify/maps-api-code-samples?style=social)
+
 
 Welcome to the **Geoapify Location Platform Code Samples** repository! This project provides a growing collection of code samples and demos showcasing how to work with Geoapify's powerful geospatial APIs. Whether you're building mapping applications, calculating routes, or integrating geocoding, these samples will help you get started quickly.
 
-## Available Code Samples
+## 📚 Table of Contents
 
-### **1. JavaScript: [Printable Route Directions](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/printable-route-directions)**
+- [Available Code Samples](#available-code-samples)
+  - [JavaScript](#javascript)
+  - [Node.js](#nodejs)
+  - [Python](#python)
+- [Upcoming Code Samples](#upcoming-code-samples)
+- [How to Use](#how-to-use)
+- [About Geoapify](#about-geoapify)
+- [Feedback and Contributions](#feedback-and-contributions)
 
-#### Description:
-This code sample demonstrates how to generate **Printable Route Directions** using Geoapify's Routing API and Static Maps API with JavaScript and HTML. It includes interactive features and static content generation for detailed route instructions.
+## 🧩 Available Code Samples
 
-#### Features:
-- **Turn-by-Turn Instructions:** Generate step-by-step instructions with icons, distances, and times.
-- **Static Route Preview:** Create a static map image of the entire route using a **POST request**.
-- **Step Previews:** Generate dynamic step-by-step map visuals with bearings and directional arrows.
-- **Route Elevation Profile:** Render an elevation chart using elevation data from the Routing API.
+### JavaScript
 
-#### APIs Used:
+* [Printable Route Directions](#javascript-printable-route-directions)
+
+### Node.js
+
+* [Batch Geocoding with Rate Limiting](#nodejs-batch-geocoding-with-rate-limiting)
+* [Batch Reverse Geocoding](#nodejs-batch-reverse-geocoding)
+
+### Python
+
+* [Create Map Example](#python-create-map-example)
+* [Batch Geocode Example](#python-batch-geocode-example)
+* [Reverse Geocode Example](#python-reverse-geocode-example)
+* [Address Standardization Example](#python-address-standardization-example)
+* [Address Validation Example](#python-address-validation-example)
+* [Isoline Visualization Example](#python-isoline-visualization-example)
+* [Display Geocoded Addresses](#python-display-geocoded-addresses-with-clustering-and-confidence-coloring)
+* [Fetch Places with Grid and Pagination](#python-fetch-places-with-grid-and-pagination)
+* [Route Planner Result Processor](#python-route-planner-result-processor)
+
+
+### JavaScript: [Printable Route Directions](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/printable-route-directions)
+
+**What it does:**  
+Generates printable, step-by-step route directions with static maps, interactive previews, and an elevation chart.
+
+**How it works:**  
+Uses JavaScript and HTML to call the Geoapify Routing API for route data and the Static Maps API to render visual instructions. It includes an overview image of the full route, dynamic step previews with arrows, and an elevation profile.
+
+**Key features:**
+- Turn-by-turn instructions with icons, distances, and durations.
+- Static map of the complete route via a POST request.
+- Dynamic map previews for each step with bearings and arrows.
+- Elevation profile chart using route data.
+
+**APIs used:**
 - [Geoapify Routing API](https://www.geoapify.com/routing-api/)
 - [Geoapify Static Maps API](https://www.geoapify.com/static-maps-api/)
 
-#### Demo:
-Explore the demo: [Printable Route Directions Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
+**Demo:**  
+👉 [Printable Route Directions – Live Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
 
-### **2. Python: [Create Map Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/create-a-map)**
+[↑ Back to top](#table-of-contents)
+---
 
-#### Description:
-This sample demonstrates how to generate an interactive map using the Geoapify Maps API with Python and Folium.
+### Node.js: [Batch Geocoding with Rate Limiting](https://github.com/geoapify/maps-api-code-samples/tree/main/node/geocoding-with-RPS-limit-respect)
 
-#### Features:
-- Custom map styles using Geoapify API.
-- Interactive markers for enhanced user experience.
-- Dynamic zoom and center capabilities.
+**What it does:**  
+Geocodes a large list of addresses while respecting API rate limits automatically.
 
-#### APIs Used:
-- [Geoapify Maps Tiles](https://www.geoapify.com/map-tiles/)
+**How it works:**  
+Reads addresses from a text file and sends geocoding requests to the Geoapify API using a built-in rate limiter. It ensures no more than 5 requests per second (Free plan limit), logs progress, and saves structured results to a JSON file.
 
-### **3. Python: [Batch Geocode Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/geocode_addresses)**
+**Key features:**
+- Reads addresses line-by-line from `input.txt`.
+- Enforces 5 requests per second using Geoapify’s rate limiter.
+- Outputs full geocoding results to `results.json`.
+- Logs progress and errors in real time.
+- Uses modern stack: ES modules, `node-fetch`, and `@geoapify/request-rate-limiter`.
 
-#### Description:
-This example shows how to perform forward geocoding using the Geoapify Geocoding API to obtain latitude and longitude from addresses.
-
-#### Features:
-- Batch geocoding support.
-- Country filtering for improved accuracy.
-- NDJSON output format.
-
-#### APIs Used:
-- [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/)
-
-### **4. Python: [Reverse Geocode Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/reverse-geocoding)**
-
-#### Description:
-This example demonstrates how to perform reverse geocoding to retrieve addresses from latitude and longitude coordinates using the Geoapify API.
-
-#### Features:
-- Batch processing of coordinates.
-- Configurable response format (`json` or `geojson`).
-- Country filtering for improved results.
-
-#### APIs Used:
-- [Geoapify Reverse Geocoding API](https://www.geoapify.com/reverse-geocoding-api/)
-
-Sure! Here's how you can write similar sections for the **Address Standardization** and **Address Validation** examples in the same style as your Reverse Geocode Example:
-
-
-### **5. Python: [Address Standardization Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/address-standardization)**
-
-#### Description:
-This example demonstrates how to use the Geoapify Geocoding API to geocode addresses and generate standardized address strings based on a custom format.
-
-#### Features:
-- Batch geocoding of address lists.
-- Flexible address formatting using placeholders (e.g., `{street}`, `{city}`, `{postcode}`).
-- Output in both NDJSON (raw results) and CSV (standardized format).
-
-#### APIs Used:
-- [Geoapify Forward Geocoding API](https://www.geoapify.com/geocoding-api/)
-
-### **6. Python: [Address Validation Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/address-validation)**
-
-#### Description:
-This example shows how to validate address accuracy using confidence levels returned by the Geoapify Geocoding API.
-
-#### Features:
-- Batch address validation with detailed confidence analysis.
-- Classification into `CONFIRMED`, `PARTIALLY_CONFIRMED`, and `NOT_CONFIRMED`.
-- Output CSV includes validation results and reasons for uncertainty.
-
-#### APIs Used:
-- [Geoapify Forward Geocoding API](https://www.geoapify.com/geocoding-api/)
-
-### **7. Python: [Isoline Visualization Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/calculate-and-visualize-isoline)**
-
-#### Description:  
-This example demonstrates how to use the Geoapify Isoline API to generate and display **isochrones** (time-based) or **isodistances** (distance-based) as interactive polygons on a map using **Folium**.
-
-#### Features:
-- Visualizes travel range from a specific location by time or distance.
-- Supports multiple travel modes (`drive`, `walk`, `bicycle`, etc.).
-- Accepts advanced options like traffic modeling, route optimization, and avoidance.
-- Saves and opens an interactive HTML map with isoline overlays.
-
-#### APIs Used:
-- [Geoapify Isoline API](https://www.geoapify.com/isoline-api/)
-- [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)  
-- [Folium Library](https://python-visualization.github.io/folium/)
-
-
-### **8. Python: [Display Geocoded Addresses with Clustering and Confidence Coloring](https://github.com/geoapify/maps-api-code-samples/tree/main/python/show-addresses-on-a-map)**
-
-#### Description:  
-This example demonstrates how to display **geocoded addresses** on a Folium map using data from Geoapify. It supports **marker clustering**, **interactive popups**, and **confidence-based color coding**. Optionally, you can enable **custom markers** using the Geoapify Map Markers API.
-
-#### Features:
-- Reads geocoded data from an NDJSON file.
-- Adds individual markers with address popups.
-- Optionally clusters nearby markers with `MarkerCluster`.
-- Colors markers based on `rank.confidence` value.
-- Supports custom marker icons via Geoapify Map Markers API.
-- Automatically adjusts map zoom to fit all locations.
-- Opens the result in a browser as an interactive HTML map.
-
-#### APIs Used:
-- [Geoapify Map Markers API](https://apidocs.geoapify.com/playground/icon/)
-- [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)  
-- [Folium Library](https://python-visualization.github.io/folium/)  
-- [Folium MarkerCluster Plugin](https://python-visualization.github.io/folium/latest/user_guide/plugins/marker_cluster.html)
-
-### **9. Python: [Fetch Places with Grid and Pagination](https://github.com/geoapify/maps-api-code-samples/tree/main/python/query-points-of-interest-with-places-api)**
-
-#### Description:  
-This example demonstrates how to fetch **places data** from the Geoapify Places API for a given bounding box. It divides large areas into smaller grid cells (if needed), handles **pagination**, and writes results in **NDJSON format**.
-
-#### Features:
-- Accepts a bounding box and optional place categories.
-- Divides the area into grid cells ≤ 5 km using lat/lon conversion.
-- Handles pagination when more than 200 results are returned.
-- Uses `aiohttp` + `asyncio` for efficient parallel requests.
-- Implements request rate-limiting (5 RPS) to comply with Geoapify Free Plan.
-- Outputs place `properties` in newline-delimited JSON format (NDJSON).
-
-#### APIs Used:
-- [Geoapify Places API](https://www.geoapify.com/places-api/)
-- [API Playground – Places](https://apidocs.geoapify.com/playground/places/)
-- [Asyncio](https://docs.python.org/3/library/asyncio.html), [Aiohttp](https://docs.aiohttp.org/)
-
-
-### **10. Python: [Route Planner Result Processor](https://github.com/geoapify/maps-api-code-samples/tree/main/python/route-planner)**
-
-#### **Description:**  
-This example demonstrates how to process a request to the **Geoapify Route Planner API**, generate structured outputs for each agent, and visualize their assigned routes.
-
-#### **Features:**
-- Accepts a JSON request compatible with the Route Planner API.
-- Calls the **Route Planner API** and retrieves planned jobs and waypoints.
-- Creates **individual folders** for each agent:
-  - Saves `plan.json` with job and route details.
-  - Renders a **route map** using **Folium** and the **Routing API**.
-- Outputs an `issues.json` file listing any unassigned or problematic jobs.
-  
-#### **APIs Used:**
-- [Geoapify Route Planner API](https://www.geoapify.com/route-planner/)
-- [Geoapify Routing API](https://www.geoapify.com/routing-api/)
-- [Folium Library](https://python-visualization.github.io/folium/)
-
-
-### **11. JavaScript(Node.js): [Batch Geocoding with Rate Limiting](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/geocoding-with-RPS-limit-respect)**
-
-#### **Description:**  
-This example demonstrates how to geocode a large number of addresses using the **Geoapify Geocoding API**, while automatically respecting API rate limits with the help of the [`@geoapify/request-rate-limiter`](https://www.npmjs.com/package/@geoapify/request-rate-limiter) package.
-
-#### **Features:**
-- Reads addresses from a plain text file (`input.txt`), one per line.
-- Sends geocoding requests with a limit of **5 requests per second** (default for Free plan).
-- Outputs results to:
-  - `results.json` — full API response per address.
-- Logs geocoding progress and errors in real-time.
-- Built with **ES modules**, `node-fetch`, and Geoapify’s official rate limiter.
-
-#### **APIs Used:**
+**APIs used:**
 - [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/)
 - [@geoapify/request-rate-limiter](https://www.npmjs.com/package/@geoapify/request-rate-limiter)
 
-### **12. JavaScript(Node.js): [Batch Reverse Geocoding](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/reverse-geocoding-lat-lon-to-address)**
+### Node.js: [Batch Reverse Geocoding](https://github.com/geoapify/maps-api-code-samples/tree/main/node/reverse-geocoding-lat-lon-to-address)
 
-#### **Description:**  
-This example demonstrates how to perform batch **reverse geocoding** using the **Geoapify Reverse Geocoding API**. It reads a list of latitude/longitude pairs from a text file, resolves them into addresses, and saves the output as structured JSON — all while respecting rate limits.
+**What it does:**  
+Converts latitude/longitude pairs into human-readable addresses in batch mode, while respecting Geoapify API rate limits.
 
-#### **Features:**
-- Reads coordinate pairs (`lat,lon`) from `input.txt`.
-- Calls the **Geoapify Reverse Geocoding API** for each location.
-- Uses [`@geoapify/request-rate-limiter`](https://www.npmjs.com/package/@geoapify/request-rate-limiter) to automatically respect the 5 RPS API limit.
-- Logs progress and handles errors gracefully.
-- Saves results to a `results.json` file in structured format.
+**How it works:**  
+Reads coordinate pairs from a text file and uses the Geoapify Reverse Geocoding API to resolve them into addresses. The script uses a built-in rate limiter to stay within 5 requests per second (Free plan limit) and saves the results in structured JSON.
 
-#### **APIs Used:**
+**Key features:**
+- Reads coordinate pairs from `input.txt` (`lat,lon` format).
+- Sends reverse geocoding requests for each point.
+- Automatically respects the 5 RPS limit using `@geoapify/request-rate-limiter`.
+- Logs progress and errors in real time.
+- Outputs results to `results.json`.
+
+**APIs used:**
 - [Geoapify Reverse Geocoding API](https://www.geoapify.com/reverse-geocoding-api/)
 - [@geoapify/request-rate-limiter](https://www.npmjs.com/package/@geoapify/request-rate-limiter)
 - [node-fetch](https://www.npmjs.com/package/node-fetch)
 
+[↑ Back to top](#table-of-contents)
+---
 
-## Upcoming Code Samples
+### Python: [Create Map Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/create-a-map)
 
-We plan to expand this repository with code samples in various programming languages, demonstrating different Geoapify APIs, including:
+**What it does:**  
+Generates an interactive web map using Geoapify map tiles and the Folium Python library.
 
-1. **Geocoding and Address Lookup:**
-   - Forward and reverse geocoding examples.
-   - Address validation and standardization.
+**How it works:**  
+Uses Python and Folium to create a Leaflet-based map with custom tile styles from Geoapify. You can add interactive markers, control the map center and zoom, and export the result as an HTML file.
 
-2. **Isochrones API:**
-   - Create travel-time or distance-based areas.
-   - Use cases for accessibility analysis and service area mapping.
+**Key features:**
+- Custom map styles via Geoapify tile URLs.
+- Interactive markers for enhanced UX.
+- Dynamically set zoom level and map center.
+- Outputs a self-contained interactive HTML map.
 
-3. **POI Search API:**
-   - Find points of interest near a location.
-   - Filter results by categories, names, or other attributes.
+**APIs used:**
+- [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)
 
-4. **Interactive and Static Maps:**
-   - Generate and style static maps.
-   - Integrate dynamic interactive maps using Geoapify map tiles.
+### Python: [Batch Geocode Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/geocode_addresses)
 
-5. **Multi-Language Code Samples:**
-   - Examples in **JavaScript**, **Python**, **Node.js**, **Java**, **C#**, and more.
+**What it does:**  
+Performs batch forward geocoding to convert addresses into geographic coordinates (latitude and longitude).
 
-## How to Use
+**How it works:**  
+Reads a list of addresses and sends them to the Geoapify Geocoding API. Optionally applies country filters to improve result relevance. Results are saved in NDJSON format for easy processing.
 
-Each code sample includes:
-- **Detailed Instructions:** Step-by-step guidance to set up and run the sample.
-- **Ready-to-Run Code:** Fully functional code you can test immediately.
-- **APIs in Action:** Demonstrations of Geoapify's APIs with practical use cases.
+**Key features:**
+- Batch processing of address lists.
+- Optional country filtering to improve accuracy.
+- Outputs results in newline-delimited JSON (NDJSON) format.
 
-Stay tuned for updates as we add more samples!
+**APIs used:**
+- [Geoapify Geocoding API](https://www.geoapify.com/geocoding-api/)
 
-## About Geoapify
+### Python: [Reverse Geocode Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/reverse-geocoding)
 
-The [Geoapify Location Platform](https://www.geoapify.com) provides APIs and tools for geospatial applications, including geocoding, routing, isochrones, POI search, and map generation. Its flexible APIs are perfect for developers building location-based services or GIS solutions.
+**What it does:**  
+Converts latitude and longitude coordinates into human-readable addresses using batch reverse geocoding.
 
-## Feedback and Contributions
+**How it works:**  
+Processes a list of coordinate pairs and sends them to the Geoapify Reverse Geocoding API. Supports optional country filtering and selectable output formats such as `json` or `geojson`.
 
-We welcome feedback and contributions to improve this repository. If you have questions, suggestions, or would like to share your Geoapify-based project, feel free to [reach out](mailto:info@geoapify.com)!
+**Key features:**
+- Batch reverse geocoding of coordinate lists.
+- Country filtering for more relevant results.
+- Configurable output format: `json` or `geojson`.
 
-Stay updated as we expand this repository to include even more Geoapify API use cases.
+**APIs used:**
+- [Geoapify Reverse Geocoding API](https://www.geoapify.com/reverse-geocoding-api/)
+
+### Python: [Address Standardization Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/address-standardization)
+
+**What it does:**  
+Geocodes raw address data and generates standardized address strings based on a custom format.
+
+**How it works:**  
+Processes a batch of addresses using the Geoapify Geocoding API and applies a formatting template with placeholders like `{street}`, `{postcode}`, and `{city}`. Supports both raw and clean outputs for different use cases.
+
+**Key features:**
+- Batch geocoding of address lists.
+- Flexible address formatting using placeholders.
+- Outputs:
+  - NDJSON (raw API results)
+  - CSV (standardized address format)
+
+**APIs used:**
+- [Geoapify Forward Geocoding API](https://www.geoapify.com/geocoding-api/)
+
+### Python: [Address Validation Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/address-validation)
+
+**What it does:**  
+Validates address quality and accuracy using confidence levels from the Geoapify Geocoding API.
+
+**How it works:**  
+Performs batch geocoding of address data and evaluates the `rank.confidence` and `result_type` fields to assess how well each address is recognized. Results are classified into confidence levels and saved to a CSV file.
+
+**Key features:**
+- Batch validation of address lists.
+- Confidence-based classification:
+  - `CONFIRMED`
+  - `PARTIALLY_CONFIRMED`
+  - `NOT_CONFIRMED`
+- CSV output includes validation results and uncertainty reasons.
+
+**APIs used:**
+- [Geoapify Forward Geocoding API](https://www.geoapify.com/geocoding-api/)
+
+### Python: [Isoline Visualization Example](https://github.com/geoapify/maps-api-code-samples/tree/main/python/calculate-and-visualize-isoline)
+
+**What it does:**  
+Generates and visualizes travel areas (isochrones or isodistances) as interactive polygons on a map.
+
+**How it works:**  
+Uses the Geoapify Isoline API to calculate reachable areas from a starting point, based on time or distance. The result is rendered on a Leaflet-based map with Folium and saved as an interactive HTML file.
+
+**Key features:**
+- Visualizes travel range by time or distance.
+- Supports various travel modes (`drive`, `walk`, `bicycle`, etc.).
+- Accepts advanced options: traffic, route optimization, avoidance zones.
+- Outputs an interactive HTML map with isoline overlays.
+
+**APIs used:**
+- [Geoapify Isoline API](https://www.geoapify.com/isoline-api/)
+- [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)
+- [Folium Library](https://python-visualization.github.io/folium/)
+
+### Python: [Display Geocoded Addresses with Clustering and Confidence Coloring](https://github.com/geoapify/maps-api-code-samples/tree/main/python/show-addresses-on-a-map)
+
+**What it does:**  
+Displays geocoded address data on an interactive Folium map, with support for clustering, confidence-based color coding, and optional custom markers.
+
+**How it works:**  
+Reads geocoded results from an NDJSON file and plots them on a Leaflet map using Folium. Nearby markers can be clustered, and each marker’s color reflects its confidence level. You can optionally use custom map marker icons from the Geoapify Marker API.
+
+**Key features:**
+- Reads geocoded address data from NDJSON.
+- Adds interactive markers with address popups.
+- Marker clustering with `MarkerCluster`.
+- Marker color reflects `rank.confidence` values.
+- Optional custom icons via Geoapify Marker API.
+- Auto-fit map view to all markers.
+- Outputs a fully interactive HTML map.
+
+**APIs used:**
+- [Geoapify Map Markers API](https://apidocs.geoapify.com/playground/icon/)
+- [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)
+- [Folium Library](https://python-visualization.github.io/folium/)
+- [Folium MarkerCluster Plugin](https://python-visualization.github.io/folium/latest/user_guide/plugins/marker_cluster.html)
+
+### Python: [Fetch Places with Grid and Pagination](https://github.com/geoapify/maps-api-code-samples/tree/main/python/query-points-of-interest-with-places-api)
+
+**What it does:**  
+Retrieves places of interest from the Geoapify Places API across a large geographic area using grid-based queries with pagination.
+
+**How it works:**  
+Accepts a bounding box and optional filters, then divides the area into smaller 5×5 km grid cells. It queries each cell using the Places API with pagination and saves the results in NDJSON format. The script uses `asyncio` and `aiohttp` for efficient concurrent requests and respects the Free Plan rate limit.
+
+**Key features:**
+- Input: bounding box with optional POI category filters.
+- Automatically splits large areas into 5 km grid cells.
+- Handles pagination for >200 results.
+- Uses `aiohttp` + `asyncio` for fast async requests.
+- Respects 5 RPS rate limit (Geoapify Free Plan).
+- Outputs `properties` of POIs in NDJSON format.
+
+**APIs used:**
+- [Geoapify Places API](https://www.geoapify.com/places-api/)
+- [Geoapify Places API Playground](https://apidocs.geoapify.com/playground/places/)
+- [Asyncio](https://docs.python.org/3/library/asyncio.html)
+- [Aiohttp](https://docs.aiohttp.org/)
+
+### Python: [Route Planner Result Processor](https://github.com/geoapify/maps-api-code-samples/tree/main/python/route-planner)
+
+**What it does:**  
+Processes a request to the Geoapify Route Planner API, extracts results per agent, and visualizes their routes on interactive maps.
+
+**How it works:**  
+Accepts a JSON file describing agents, jobs, and shipments. It sends the request to the Route Planner API, then organizes the results into per-agent folders. For each agent, it saves detailed route data and generates a route map using Folium and the Routing API. Unassigned or problematic jobs are logged separately.
+
+**Key features:**
+- Accepts structured JSON input compatible with Route Planner API.
+- Creates per-agent folders with route and job data (`plan.json`).
+- Generates interactive route maps using Folium.
+- Produces an `issues.json` report for unassigned jobs.
+
+**APIs used:**
+- [Geoapify Route Planner API](https://www.geoapify.com/route-planner/)
+- [Geoapify Routing API](https://www.geoapify.com/routing-api/)
+- [Folium Library](https://python-visualization.github.io/folium/)
+
+[↑ Back to top](#table-of-contents)
+---
+
+## 🚧 Upcoming Code Samples
+
+We're actively expanding this repository with examples in multiple programming languages, demonstrating how to work with additional Geoapify APIs and features.
+
+**Planned topics include:**
+
+### Geocoding & Address Lookup
+- Forward and reverse geocoding
+- Address validation and standardization
+
+### Isochrones API
+- Create travel-time or distance-based areas (isochrones/isodistances)
+- Use cases: accessibility analysis, service area mapping
+
+### POI Search API
+- Find places near a given location
+- Filter by categories, names, or tags
+
+### Interactive & Static Maps
+- Style and generate static maps
+- Embed interactive maps using Geoapify map tiles
+
+### Multi-language Code Samples
+- Examples in **JavaScript**, **Python**, **Node.js**, **Java**, **C#**, and more
+
+## 🚀 How to Use
+
+Each code sample includes everything you need to get started quickly:
+
+- **Step-by-step instructions** to install dependencies and run the code.
+- **Ready-to-run scripts or HTML demos** you can test immediately.
+- **Real-world use cases** showing how Geoapify APIs solve common geospatial tasks.
+
+## 🗺️ About Geoapify
+
+[Geoapify](https://www.geoapify.com) provides powerful and flexible APIs for building location-based and geospatial applications. Whether you're working on maps, geocoding, routing, isochrones, POI search, or spatial analysis — Geoapify offers the tools to bring your ideas to life.
+
+Our APIs are designed with developers in mind and are ideal for creating GIS platforms, logistics solutions, delivery systems, smart city tools, and more.
+
+Explore our full API catalog at [geoapify.com](https://www.geoapify.com), or check out the [API Playground](https://apidocs.geoapify.com/playground/) to test requests in your browser.
+
+## 💬 Feedback and Contributions
+
+We welcome feedback, suggestions, and contributions to improve this repository!
+
+If you have:
+- Questions about how something works,
+- Ideas for new code samples,
+- Or a Geoapify-powered project you'd like to share —
+
+Feel free to [contact us](mailto:info@geoapify.com) or open an issue or pull request.
+
+Stay tuned — we're continuously adding more examples and use cases!
