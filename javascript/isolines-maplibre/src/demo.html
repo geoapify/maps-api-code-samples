@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Isolines Explorer & MapLibre GL - Powered by Geoapify</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="styles.css" inline>
+</head>
+
+<body>
+  <div class="demo-container">
+    <div id="map"></div>
+    <div class="sidebar">
+      <h2>Isolines Explorer (MapLibre GL)</h2>
+      <p>Click on the map to create isochrone polygons</p>
+      <button class="button clear-button" id="clear-all-button">Clear All</button>
+    </div>
+  </div>
+
+  <!-- Dialog for isoline configuration -->
+  <div id="isoline-dialog" class="dialog-overlay hidden">
+    <div class="dialog">
+      <h3>Configure Isoline</h3>
+      <form id="isoline-form">
+        <div class="form-group">
+          <label for="travel-mode">Travel Mode:</label>
+          <select id="travel-mode" name="travel-mode" required>
+            <option value="walk">Walk</option>
+            <option value="hike">Hike</option>
+            <option value="scooter">Scooter</option>
+            <option value="motorcycle">Motorcycle</option>
+            <option value="drive">Drive</option>
+            <option value="truck">Truck</option>
+            <option value="light_truck">Light Truck</option>
+            <option value="medium_truck">Medium Truck</option>
+            <option value="truck_dangerous_goods">Truck Dangerous Goods</option>
+            <option value="heavy_truck">Heavy Truck</option>
+            <option value="long_truck">Long Truck</option>
+            <option value="bicycle">Bicycle</option>
+            <option value="mountain_bike">Mountain Bike</option>
+            <option value="road_bike">Road Bike</option>
+            <option value="bus">Bus</option>
+            <option value="drive_shortest">Drive Shortest</option>
+            <option value="drive_traffic_approximated">Drive Traffic Approximated</option>
+            <option value="truck_traffic_approximated">Truck Traffic Approximated</option>
+            <option value="transit">Transit</option>
+            <option value="approximated_transit">Approximated Transit</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="isoline-type">Isoline Type:</label>
+          <select id="isoline-type" name="isoline-type" required>
+            <option value="time">Time</option>
+            <option value="distance">Distance</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="isoline-value">Value:</label>
+          <input type="number" id="isoline-value" name="isoline-value" min="1" max="120" value="10" required>
+          <span id="value-unit">minutes</span>
+        </div>
+        
+        <div class="form-buttons">
+          <button type="button" id="cancel-button">Cancel</button>
+          <button type="submit" id="create-button">Create Isoline</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Loading indicator -->
+  <div id="loading-indicator" class="loading-overlay hidden">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading isoline...</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script type="module" src="demo.js" inline></script>
+</body>
+</html> 

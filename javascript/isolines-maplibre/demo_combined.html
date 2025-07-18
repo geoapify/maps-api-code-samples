@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Isolines Explorer & MapLibre GL - Powered by Geoapify</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <style>html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.demo-container {
+    flex: 1;
+    max-height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.sidebar {
+    width: 300px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-left: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.sidebar h2 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.5em;
+}
+
+.sidebar p {
+    margin: 0 0 30px 0;
+    color: #666;
+    line-height: 1.5;
+}
+
+#map {
+    flex: 1;
+    min-height: 400px;
+}
+
+.button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.clear-button {
+    background: #dc3545;
+    color: white;
+}
+
+.clear-button:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.clear-button:active {
+    transform: translateY(0);
+}
+
+/* Dialog styles */
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.dialog {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    min-width: 400px;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.dialog h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group select,
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.form-group input {
+    box-sizing: border-box;
+}
+
+#value-unit {
+    margin-left: 10px;
+    color: #666;
+    font-size: 14px;
+}
+
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.form-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#cancel-button {
+    background: #6c757d;
+    color: white;
+}
+
+#cancel-button:hover {
+    background: #5a6268;
+}
+
+#create-button {
+    background: #007bff;
+    color: white;
+}
+
+#create-button:hover {
+    background: #0056b3;
+}
+
+/* Loading indicator styles */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.loading-spinner {
+    text-align: center;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.loading-spinner p {
+    margin: 0;
+    color: #666;
+    font-size: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+/* Custom marker styles */
+.custom-marker {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.custom-marker:hover .marker-icon {
+    transform: scale(1.05);
+}
+
+.marker-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+.marker-icon:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.marker-value {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: bold;
+    border: 1px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.marker-fallback {
+    width: 40px;
+    height: 40px;
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    position: relative;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .demo-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        border-left: none;
+        border-bottom: 1px solid #e9ecef;
+        padding: 15px;
+    }
+    
+    .sidebar h2 {
+        font-size: 1.3em;
+        margin-bottom: 10px;
+    }
+    
+    .sidebar p {
+        margin-bottom: 20px;
+    }
+    
+    .dialog {
+        min-width: 90%;
+        max-width: 90%;
+        margin: 20px;
+    }
+} </style>
+</head>
+
+<body>
+  <div class="demo-container">
+    <div id="map"></div>
+    <div class="sidebar">
+      <h2>Isolines Explorer (MapLibre GL)</h2>
+      <p>Click on the map to create isochrone polygons</p>
+      <button class="button clear-button" id="clear-all-button">Clear All</button>
+    </div>
+  </div>
+
+  <!-- Dialog for isoline configuration -->
+  <div id="isoline-dialog" class="dialog-overlay hidden">
+    <div class="dialog">
+      <h3>Configure Isoline</h3>
+      <form id="isoline-form">
+        <div class="form-group">
+          <label for="travel-mode">Travel Mode:</label>
+          <select id="travel-mode" name="travel-mode" required>
+            <option value="walk">Walk</option>
+            <option value="hike">Hike</option>
+            <option value="scooter">Scooter</option>
+            <option value="motorcycle">Motorcycle</option>
+            <option value="drive">Drive</option>
+            <option value="truck">Truck</option>
+            <option value="light_truck">Light Truck</option>
+            <option value="medium_truck">Medium Truck</option>
+            <option value="truck_dangerous_goods">Truck Dangerous Goods</option>
+            <option value="heavy_truck">Heavy Truck</option>
+            <option value="long_truck">Long Truck</option>
+            <option value="bicycle">Bicycle</option>
+            <option value="mountain_bike">Mountain Bike</option>
+            <option value="road_bike">Road Bike</option>
+            <option value="bus">Bus</option>
+            <option value="drive_shortest">Drive Shortest</option>
+            <option value="drive_traffic_approximated">Drive Traffic Approximated</option>
+            <option value="truck_traffic_approximated">Truck Traffic Approximated</option>
+            <option value="transit">Transit</option>
+            <option value="approximated_transit">Approximated Transit</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="isoline-type">Isoline Type:</label>
+          <select id="isoline-type" name="isoline-type" required>
+            <option value="time">Time</option>
+            <option value="distance">Distance</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="isoline-value">Value:</label>
+          <input type="number" id="isoline-value" name="isoline-value" min="1" max="120" value="10" required>
+          <span id="value-unit">minutes</span>
+        </div>
+        
+        <div class="form-buttons">
+          <button type="button" id="cancel-button">Cancel</button>
+          <button type="submit" id="create-button">Create Isoline</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Loading indicator -->
+  <div id="loading-indicator" class="loading-overlay hidden">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading isoline...</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script type="module">// Configuration
+const GEOAPIFY_API_KEY = '93b8e26606dd485183dcdab30f239f81'; // Replace with your actual API key
+const DEFAULT_CENTER = [-74.0060, 40.7128]; // New York coordinates
+const DEFAULT_ZOOM = 13;
+
+// Color palette for isoline polygons
+const COLORS = [
+    '#FF6B6B', // Coral Red
+    '#4ECDC4', // Medium Turquoise
+    '#FFD93D', // Goldenrod
+    '#1A535C', // Dark Cyan
+    '#FF9F1C', // Bright Orange
+    '#6A4C93', // Muted Purple
+    '#1982C4', // Vibrant Blue
+    '#8AC926', // Bright Lime Green
+    '#FF595E', // Warm Red
+    '#9B5DE5'  // Soft Violet
+];
+
+// Global variables
+let map;
+let currentColorIndex = 0;
+let markerCounter = 0;
+let clickedCoordinates = null;
+let markers = [];
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+    initializeMap();
+    setupEventListeners();
+});
+
+function initializeMap() {
+    // Initialize MapLibre GL JS map
+    map = new maplibregl.Map({
+        container: 'map',
+        style: `https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=${GEOAPIFY_API_KEY}`,
+        center: DEFAULT_CENTER,
+        zoom: DEFAULT_ZOOM
+    });
+
+    // Add navigation controls
+    map.addControl(new maplibregl.NavigationControl());
+
+    // Add click event listener to the map
+    map.on('click', onMapClick);
+
+    // Add sources and layers for isolines when map is loaded
+    map.on('load', function() {
+        // Add source for isoline polygons
+        map.addSource('isolines', {
+            'type': 'geojson',
+            'data': {
+                'type': 'FeatureCollection',
+                'features': []
+            }
+        });
+
+        // Add layer for isoline polygons
+        map.addLayer({
+            'id': 'isolines-fill',
+            'type': 'fill',
+            'source': 'isolines',
+            'paint': {
+                'fill-color': ['get', 'color'],
+                'fill-opacity': 0.4
+            }
+        });
+
+        // Add layer for isoline borders
+        map.addLayer({
+            'id': 'isolines-outline',
+            'type': 'line',
+            'source': 'isolines',
+            'paint': {
+                'line-color': ['get', 'color'],
+                'line-width': 2,
+                'line-opacity': 0.8
+            }
+        });
+    });
+}
+
+function setupEventListeners() {
+    // Dialog form submission
+    document.getElementById('isoline-form').addEventListener('submit', handleFormSubmit);
+    
+    // Cancel button
+    document.getElementById('cancel-button').addEventListener('click', hideDialog);
+    
+    // Clear all button
+    document.getElementById('clear-all-button').addEventListener('click', clearAll);
+    
+    // Isoline type change event to update value unit
+    document.getElementById('isoline-type').addEventListener('change', updateValueUnit);
+    
+    // Dialog overlay click to close
+    document.getElementById('isoline-dialog').addEventListener('click', function(e) {
+        if (e.target === e.currentTarget) {
+            hideDialog();
+        }
+    });
+}
+
+function onMapClick(event) {
+    clickedCoordinates = [event.lngLat.lng, event.lngLat.lat];
+    showDialog();
+}
+
+function showDialog() {
+    const dialog = document.getElementById('isoline-dialog');
+    dialog.classList.remove('hidden');
+    
+    // Focus on the first form element
+    setTimeout(() => {
+        document.getElementById('travel-mode').focus();
+    }, 100);
+}
+
+function hideDialog() {
+    const dialog = document.getElementById('isoline-dialog');
+    dialog.classList.add('hidden');
+    clickedCoordinates = null;
+}
+
+function updateValueUnit() {
+    const isolineType = document.getElementById('isoline-type').value;
+    const valueUnit = document.getElementById('value-unit');
+    const valueInput = document.getElementById('isoline-value');
+    
+    if (isolineType === 'time') {
+        valueUnit.textContent = 'minutes';
+        valueInput.setAttribute('max', '120');
+        valueInput.setAttribute('min', '1');
+        valueInput.value = '10';
+    } else {
+        valueUnit.textContent = 'kilometers';
+        valueInput.setAttribute('max', '100');
+        valueInput.setAttribute('min', '0.1');
+        valueInput.setAttribute('step', '0.1');
+        valueInput.value = '1.0';
+    }
+}
+
+async function handleFormSubmit(event) {
+    event.preventDefault();
+    
+    if (!clickedCoordinates) {
+        alert('No coordinates selected. Please click on the map first.');
+        return;
+    }
+    
+    const formData = new FormData(event.target);
+    const travelMode = formData.get('travel-mode');
+    const isolineType = formData.get('isoline-type');
+    const isolineValue = formData.get('isoline-value');
+    
+    // Store coordinates before hiding dialog
+    const coordinates = clickedCoordinates;
+    
+    // Hide dialog
+    hideDialog();
+    
+    // Add marker immediately
+    const markerId = addMarker(coordinates, travelMode, isolineType, isolineValue);
+    
+    // Show loading indicator
+    showLoadingIndicator();
+    
+    try {
+        // Fetch isoline data
+        const isolineData = await fetchIsoline(coordinates, travelMode, isolineType, isolineValue);
+        
+        // Add isoline to map
+        addIsolineToMap(isolineData, markerId);
+        
+        markerCounter++;
+        
+    } catch (error) {
+        console.error('Error fetching isoline:', error);
+        alert('Error fetching isoline data. Please check your API key and try again.');
+        
+        // Remove the marker if API call failed
+        removeMarker(markerId);
+    } finally {
+        // Hide loading indicator
+        hideLoadingIndicator();
+    }
+}
+
+function getTravelModeIcon(travelMode) {
+    const icons = {
+        'walk': 'walking',
+        'hike': 'person-hiking',
+        'scooter': 'motorcycle',
+        'motorcycle': 'motorcycle',
+        'drive': 'car',
+        'truck': 'truck',
+        'light_truck': 'truck-pickup',
+        'medium_truck': 'truck-moving',
+        'truck_dangerous_goods': 'truck-monster',
+        'heavy_truck': 'truck-ramp-box',
+        'long_truck': 'truck-moving',
+        'bicycle': 'person-biking',
+        'mountain_bike': 'bicycle',
+        'road_bike': 'bicycle',
+        'bus': 'bus',
+        'drive_shortest': 'car-side',
+        'drive_traffic_approximated': 'car-on',
+        'truck_traffic_approximated': 'truck-front',
+        'transit': 'train-subway',
+        'approximated_transit': 'train-tram',
+    };
+
+    return icons[travelMode] || 'map-marker';
+}
+
+function generateIconUrl(travelMode, color, value) {
+    const icon = getTravelModeIcon(travelMode);
+    // Remove # from color for URL
+    const colorCode = color.replace('#', '');
+    
+    return `https://api.geoapify.com/v2/icon/?type=circle&color=%23${colorCode}&size=40&icon=${icon}&iconType=awesome&contentSize=20&contentColor=%23${colorCode}&scaleFactor=2&apiKey=${GEOAPIFY_API_KEY}`;
+}
+
+function addMarker(coordinates, travelMode, isolineType, isolineValue) {
+    const markerId = `marker-${Date.now()}-${markerCounter}`;
+    const currentColor = COLORS[currentColorIndex];
+    
+    const iconUrl = generateIconUrl(travelMode, currentColor, isolineValue);
+    
+    const markerElement = document.createElement('div');
+    markerElement.innerHTML = `
+        <div class="custom-marker">
+            <img src="${iconUrl}" class="marker-icon" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;marker-fallback&quot; style=&quot;background: ${currentColor}&quot;>●<div class=&quot;marker-value&quot; style=&quot;background: ${currentColor}&quot;>${isolineValue}</div></div>';" />
+            <div class="marker-value" style="background: ${currentColor}">${isolineValue}</div>
+        </div>
+    `;
+    
+    const marker = new maplibregl.Marker({
+        element: markerElement,
+        anchor: 'center'
+    })
+        .setLngLat([coordinates[0], coordinates[1]])
+        .addTo(map);
+    
+    marker._markerId = markerId;
+    markers.push(marker);
+    
+    return markerId;
+}
+
+function removeMarker(markerId) {
+    const markerIndex = markers.findIndex(marker => marker._markerId === markerId);
+    if (markerIndex !== -1) {
+        markers[markerIndex].remove();
+        markers.splice(markerIndex, 1);
+    }
+}
+
+async function fetchIsoline(coordinates, travelMode, isolineType, isolineValue) {
+    const [lng, lat] = coordinates;
+    
+    const params = new URLSearchParams({
+        lat: lat.toString(),
+        lon: lng.toString(),
+        type: isolineType,
+        mode: travelMode,
+        apiKey: GEOAPIFY_API_KEY
+    });
+    
+    if (isolineType === 'time') {
+        params.append('range', (parseInt(isolineValue) * 60).toString()); // Convert minutes to seconds
+    } else {
+        params.append('range', (parseFloat(isolineValue) * 1000).toString()); // Convert km to meters
+    }
+    
+    const url = `https://api.geoapify.com/v1/isoline?${params.toString()}`;
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (!data.features || data.features.length === 0) {
+        throw new Error('No isoline data returned from API');
+    }
+    
+    return data;
+}
+
+function addIsolineToMap(isolineData, markerId) {
+    const color = COLORS[currentColorIndex];
+    
+    isolineData.features.forEach(feature => {
+        feature.properties.color = color;
+        feature.properties.markerId = markerId;
+    });
+    
+    const currentData = map.getSource('isolines')._data;
+    
+    currentData.features.push(...isolineData.features);
+    
+    map.getSource('isolines').setData(currentData);
+    
+    currentColorIndex = (currentColorIndex + 1) % COLORS.length;
+    
+    if (isolineData.features.length > 0) {
+        try {
+            const bounds = new maplibregl.LngLatBounds();
+            
+            isolineData.features.forEach(feature => {
+                if (feature.geometry && feature.geometry.type === 'Polygon' && feature.geometry.coordinates) {
+                    feature.geometry.coordinates[0].forEach(coord => {
+                        if (coord && coord.length >= 2) {
+                            bounds.extend([coord[0], coord[1]]);
+                        }
+                    });
+                }
+            });
+            
+            if (!bounds.isEmpty()) {
+                map.fitBounds(bounds, { padding: 50 });
+            }
+        } catch (error) {
+            console.error('Error fitting bounds:', error);
+        }
+    }
+}
+
+function showLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loading-indicator');
+    loadingIndicator.classList.remove('hidden');
+}
+
+function hideLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loading-indicator');
+    loadingIndicator.classList.add('hidden');
+}
+
+function clearAll() {
+    // Clear all markers
+    markers.forEach(marker => {
+        marker.remove();
+    });
+    markers = [];
+    
+    // Clear all isolines
+    map.getSource('isolines').setData({
+        'type': 'FeatureCollection',
+        'features': []
+    });
+    
+    // Reset counters
+    markerCounter = 0;
+    currentColorIndex = 0;
+}</script>
+</body>
+</html> 
