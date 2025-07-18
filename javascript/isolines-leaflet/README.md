@@ -23,7 +23,7 @@ This project is ideal for exploring service areas, delivery coverage, or accessi
 ## Demo
 
 You can try the sample live here:  
-**[Open Demo on GitHub Pages](https://geoapify.github.io/maps-api-code-samples/javascript/isoline-leaflet/demo_combined.html)**
+**[Open Demo on GitHub Pages](https://geoapify.github.io/maps-api-code-samples/javascript/isolines-leaflet/demo_combined.html)**
 
 > The `demo_combined.html` file is a self-contained version of the project with all CSS and JavaScript inlined for easy deployment on GitHub Pages. 
 

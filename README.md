@@ -9,6 +9,9 @@ Welcome to the **Geoapify Location Platform Code Samples** repository! This proj
 ### JavaScript
 
 * [Printable Route Directions](#javascript-printable-route-directions)
+* [Visualize Isochrones with Leaflet](#javascript-visualize-isochrones-with-leaflet)
+* [Visualize Isochrones with MapLibre GL](#javascript-visualize-isochrones-with-maplibre-gl)
+
 
 ### Node.js
 
@@ -51,6 +54,58 @@ Uses JavaScript and HTML to call the Geoapify Routing API for route data and the
 
 **Demo:**  
 👉 [Printable Route Directions – Live Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
+
+---
+
+### JavaScript: [Visualize Isochrones with Leaflet](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/isolines-leaflet)
+
+**What it does:**
+Calculates and displays isochrone (travel-time) and isodistance (travel-distance) polygons on an interactive Leaflet map.
+
+**How it works:**
+When a user clicks on the map, a form appears to select travel mode, isoline type, and range. The app requests isoline polygons from the Geoapify Isoline API, adds them to the map as GeoJSON layers, and places a custom marker at the origin.
+
+**Key features:**
+
+* Easy-to-use Leaflet-based interface.
+* Support for multiple isolines with unique colors.
+* Informative icons via the Geoapify Marker API.
+* Real-time isoline rendering with automatic zoom.
+* Optional one-file build with inlined JS/CSS for easy deployment.
+
+**APIs used:**
+
+* [Geoapify Isoline API](https://apidocs.geoapify.com/docs/isolines/)
+* [Geoapify Marker Icon API](https://www.geoapify.com/map-marker-icon-api/)
+
+**Demo:**
+👉 [Leaflet Isochrone Demo – Live](https://geoapify.github.io/maps-api-code-samples/javascript/isolines-leaflet/demo_combined.html)
+
+---
+
+### JavaScript: [Visualize Isochrones with MapLibre GL](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/isolines-maplibre)
+
+**What it does:**
+Displays isochrone (time-based) and isodistance (distance-based) isolines on a MapLibre GL map using user-selected travel modes and values.
+
+**How it works:**
+Users click on the map to choose a location, select parameters in a form, and the app requests an isoline from the Geoapify API. The result is styled and rendered as a colored polygon, with a custom marker showing the travel mode and range.
+
+**Key features:**
+
+* Interactive UI with travel mode, type, and range selection.
+* Multiple isolines with different colors.
+* Custom markers using the Geoapify Marker API.
+* Fully vector-based rendering via GeoJSON layers.
+* Self-contained build option for GitHub Pages deployment.
+
+**APIs used:**
+
+* [Geoapify Isoline API](https://www.geoapify.com/isoline-api/)
+* [Geoapify Marker Icon API](https://www.geoapify.com/map-marker-icon-api/)
+
+**Demo:**
+👉 [MapLibre Isochrone Demo – Live](https://geoapify.github.io/maps-api-code-samples/javascript/isolines-maplibre/demo_combined.html)
 
 ---
 
