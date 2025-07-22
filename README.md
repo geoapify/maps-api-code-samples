@@ -11,7 +11,7 @@ Welcome to the **Geoapify Location Platform Code Samples** repository! This proj
 * [Printable Route Directions](#javascript-printable-route-directions)
 * [Visualize Isochrones with Leaflet](#javascript-visualize-isochrones-with-leaflet)
 * [Visualize Isochrones with MapLibre GL](#javascript-visualize-isochrones-with-maplibre-gl)
-
+* [Route Elevation Profile with MapLibre](#javascript-route-elevation-profile-with-maplibre)
 
 ### Node.js
 
@@ -106,6 +106,33 @@ Users click on the map to choose a location, select parameters in a form, and th
 
 **Demo:**
 👉 [MapLibre Isochrone Demo – Live](https://geoapify.github.io/maps-api-code-samples/javascript/isolines-maplibre/demo_combined.html)
+
+---
+
+## JavaScript: [Route Elevation Profile with MapLibre](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/route-directions-maplibre)
+
+**What it does:**
+Calculates a route between two points and displays the turn-by-turn directions, travel stats, and an interactive elevation profile chart using MapLibre and Geoapify services.
+
+**How it works:**
+Users define start and end locations by clicking on the map or typing addresses. The app uses the Geoapify Route Directions UI to calculate the route and fetch elevation data. The result is drawn on the map with markers and visualized with a Chart.js elevation profile.
+
+**Key features:**
+
+* Interactive map with address search and click-to-add waypoints.
+* 12+ travel modes supported (drive, hike, bike, scooter, truck, etc.).
+* Start and end markers with coordinate tooltips.
+* Live distance, duration, elevation gain/loss display.
+* Responsive elevation profile chart built with Chart.js.
+* Self-contained demo build for GitHub Pages or distribution.
+
+**APIs used:**
+
+* [Geoapify Routing API](https://www.geoapify.com/routing-api/)
+* [Geoapify Route Directions UI](https://www.npmjs.com/package/@geoapify/route-directions)
+
+**Demo:**
+👉 [Route Elevation MapLibre Demo – Live](https://geoapify.github.io/maps-api-code-samples/javascript/route-directions-maplibre/demo_combined.html)
 
 ---
 

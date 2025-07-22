@@ -14,7 +14,7 @@ Users can click on the map or search for addresses to define waypoints, select a
 ## Demo
 
 Run the standalone demo from GitHub Pages:
-**[Open Demo](https://geoapify.github.io/maps-api-code-samples/javascript/route-elevation-maplibre/demo_combined.html)**
+**[Open Demo](https://geoapify.github.io/maps-api-code-samples/javascript/route-directions-maplibre/demo_combined.html)**
 
 ## Features
 
