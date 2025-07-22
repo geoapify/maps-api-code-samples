@@ -7,7 +7,7 @@
     "geocode-addresses": "geocoder.js"
   },
   "scripts": {
-    "start": "node geocoder.js -k 93b8e26606dd485183dcdab30f239f81 -i sample-addresses.csv -o results.json -f json",
+    "start": "node geocoder.js -k 27a3c5f9a6754da28283d1995edb9467 -i sample-addresses.csv -o results.json -f json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

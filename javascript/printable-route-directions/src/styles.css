@@ -1,0 +1,159 @@
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.demo-container {
+    flex: 1;
+    max-height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.demo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    margin: 10px;
+    box-shadow: 0px 0px 5px 3px rgb(0 0 0 / 10%);
+    border-radius: 5px;
+}
+
+.controls {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#instructions {
+    flex: 1;
+    max-width: 800px;
+    margin: auto;
+}
+
+#my-map {
+    flex: 1;
+}
+
+.code-container {
+    padding: 10px;
+    padding-top: 50px;
+    min-width: 800px;
+    max-width: 800px;
+
+    overflow-y: auto;
+    display: block;
+}
+
+.direction-waypoints {
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.8);
+    margin-bottom: 30px;
+}
+
+.direction-waypoints.smaller {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.direction-waypoints .direction-waypoints-from-to{
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.direction-instruction {
+    display: flex;
+    flex-direction: row;
+    margin: 10px 0;
+
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.direction-instruction-number {
+    margin-right: 20px;
+}
+
+.direction-instruction-icon {
+    min-width: 40px;
+    max-width: 40px;
+    display: flex;
+}
+
+.direction-instruction-image {
+    width: 300px;
+    height: 200px;
+    display: flex;
+    margin-left: auto;
+}
+
+.button {
+    height: 30px;
+    margin-left: auto;
+    background: grey;
+    border: none;
+    width: 100px;
+    border-radius: 4px;
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.button:focus {
+    outline: none;
+    box-shadow: 0 0 4px rgba(76, 175, 80, 0.8);
+}
+
+.hidden {
+    display: none;
+}
+
+.elevation-profile-container {
+    max-height: 250px;
+    min-height: 250px;
+
+    text-align: center;
+}
+
+.instructions-placeholder {
+    padding: 50px 20px;
+    text-align: center;
+    color: #888;
+}
+
+.route-preview-container {
+    text-align: center;
+}
+
+.route-preview {
+    width: 100%;
+    max-width: 800px;
+}

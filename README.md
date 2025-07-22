@@ -53,7 +53,7 @@ Uses JavaScript and HTML to call the Geoapify Routing API for route data and the
 - [Geoapify Static Maps API](https://www.geoapify.com/static-maps-api/)
 
 **Demo:**  
-👉 [Printable Route Directions – Live Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
+👉 [Printable Route Directions – Live Demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo_combined.html)
 
 ---
 

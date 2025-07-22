@@ -13,7 +13,7 @@ This combination of dynamic and static content allows users to interact with the
 
 ## Demo
 
-You can see the code sample in action here: [Demo Link](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo.html)
+You can see the code sample in action here: [Demo Link](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo_combined.html)
 
 ## About the Code Sample
 
@@ -312,7 +312,78 @@ The **`generateImageURL()`** function dynamically generates static map previews 
      geometries.push(`polygon:${manoeuvreArrow};linewidth:1;linecolor:${encodeURIComponent('#333333')};fillcolor:${encodeURIComponent('#ffffff')};fillopacity:1`);
      ```
 
-### Summary
+## How to Run the Sample
+
+You can run the Route + Elevation demo locally using a static server or directly in your IDE with live preview.
+
+### Option 1: Run with a Local HTTP Server
+
+Serve the contents of the folder using a static server:
+
+1. **Install `http-server`** (if not already installed):
+
+   ```bash
+   npm install -g http-server
+   ```
+
+2. **Start the server** from the folder containing your HTML and JS files:
+
+   ```bash
+   http-server .
+   ```
+
+3. **Open the demo** in your browser:
+
+   ```
+   http://localhost:8080/demo.html
+   ```
+
+Or use `npx` for a one-time server:
+
+```bash
+npx http-server .
+```
+
+### Option 2: Use IDE Live Preview
+
+Many modern IDEs provide live preview for HTML files:
+
+* **Visual Studio Code** — Install the “Live Server” extension, then right-click `src/demo.html` and choose **“Open with Live Server”**.
+* **WebStorm / IntelliJ / PhpStorm** — Right-click `src/demo.html` and choose **“Open in Browser”**.
+* **Brackets** — Click the **lightning bolt icon** or use **File → Live Preview**.
+
+> Opening the file directly via `file://` protocol is not recommended, as some browsers block dynamic requests in local mode.
+
+## How to Build `demo_combined.html`
+
+As an alternative to running the project from multiple files, you can generate a standalone HTML file with all scripts and styles inlined. This is useful for GitHub Pages or distributing the demo as a single file.
+
+### Steps
+
+1. **Navigate to the parent folder**, e.g. `javascript/route-elevation-chart`:
+
+   ```bash
+   cd javascript/route-elevation-chart
+   ```
+
+2. **Install the required build dependency**:
+
+   ```bash
+   npm install inline-source
+   ```
+
+3. **Run the build script** (make sure `combine.js` exists in the folder):
+
+   ```bash
+   node combine.js
+   ```
+
+This will generate a `demo_combined.html` file with all JavaScript and CSS embedded inline.
+
+> The `combine.js` script should take `src/` as input and produce a portable version suitable for publishing or offline usage.
+
+
+## Summary
 
 This code sample showcases how to use the **Geoapify Routing API** and **Geoapify Static Maps API** to generate rich, interactive route instructions and static map visuals. It includes key functionalities like:
 

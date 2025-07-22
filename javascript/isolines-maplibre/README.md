@@ -4,7 +4,7 @@ This code sample demonstrates how to calculate and visualize **isochrones** (tim
 
 The application lets users click on the map, select travel mode and isoline type, and view the resulting polygon directly on a dynamic vector map. Each isoline is styled with a distinct color and features a custom marker that reflects the travel mode and value.
 
-![Isoline MapLibre Screenshot](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/isolines-maplibre/isoline-maplibre-demo-screenshot.jpg?raw=true)
+![Screenshot: Multiple isochrones with custom markers and colors](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/isolines-maplibre/isoline-maplibre-demo-screenshot.jpg?raw=true)
 
 The application combines Geoapify APIs with MapLibre’s vector rendering engine:
 
@@ -131,9 +131,6 @@ As an alternative to running the project from the `src/` folder, you can generat
 This will create a `demo_combined.html` file in the `isolines-maplibre/` folder, with all assets embedded.
 
 > The script uses `src/demo.html` as input and outputs a self-contained file with embedded JavaScript and CSS.
-
-
-Вот следующий раздел — **Code Examples** — с ключевыми фрагментами из `isolines-maplibre`:
 
 ## Code Examples
 

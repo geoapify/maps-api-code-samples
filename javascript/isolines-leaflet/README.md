@@ -4,7 +4,7 @@ This code sample demonstrates how to calculate and display **isochrones** (time-
 
 The application allows users to click on the map, configure travel mode and isoline parameters, and visualize the reachable area as a polygon layer. Each isoline is styled with a distinct color and includes a custom marker to indicate its origin.
 
-![Isoline Leaflet Screenshot](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/isolines-leaflet/isoline-leaflet-demo-screenshot.jpg?raw=true)
+![Screenshot: Isoline visualization with Leaflet and custom markers](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/isolines-leaflet/isoline-leaflet-demo-screenshot.jpg?raw=true)
 
 The code calculates isolines with the [Geoapify Isoline API](https://www.geoapify.com/isoline-api/) and renders it dynamically using Leaflet:
 

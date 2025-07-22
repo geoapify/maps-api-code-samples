@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Route Elevation Profile - MapLibre GL JS - Powered by Geoapify</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@geoapify/route-directions@^1/styles/styles.min.css" />
+  <link rel="stylesheet" href="styles.css" inline>
+</head>
+
+<body>
+  <div class="container">
+    <div class="controls">
+      <div class="control-header">
+        <div id="route-directions"></div>
+      </div>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div class="info-panel" id="info-panel">
+      <p>Click two points on the map to create a route and see the elevation profile.</p>
+    </div>
+    
+    <div class="stats hidden" id="stats">
+      <div class="stat">
+        <span class="label">Distance:</span>
+        <span id="distance">-</span>
+      </div>
+      <div class="stat">
+        <span class="label">Duration:</span>
+        <span id="duration">-</span>
+      </div>
+      <div class="stat">
+        <span class="label">Elevation Gain:</span>
+        <span id="elevation-gain">-</span>
+      </div>
+      <div class="stat">
+        <span class="label">Elevation Loss:</span>
+        <span id="elevation-loss">-</span>
+      </div>
+    </div>
+    
+    <div class="elevation-chart hidden" id="elevation-chart">
+      <canvas id="chart" width="800" height="200"></canvas>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/@geoapify/route-directions@^1/dist/index.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <script type="module" src="elevation.js" inline></script>
+  <script type="module" src="demo.js" inline></script>
+</body>
+</html> 

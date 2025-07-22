@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Route Elevation Profile - MapLibre GL JS - Powered by Geoapify</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@geoapify/route-directions@^1/styles/styles.min.css" />
+  <style>
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.controls {
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.control-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#route-directions {
+    flex: 1;
+}
+
+#map {
+    flex: 1;
+}
+
+.info-panel {
+    padding: 15px;
+    background: #e9ecef;
+    text-align: center;
+    color: #6c757d;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.info-panel p {
+    margin: 0;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat .label {
+    display: block;
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.stat span:last-child {
+    font-size: 16px;
+    font-weight: 600;
+    color: #007bff;
+}
+
+.elevation-chart {
+    height: 180px;
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.elevation-chart canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .controls {
+        padding: 8px 12px;
+    }
+    
+    .control-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .elevation-chart {
+        height: 150px;
+        padding: 12px;
+    }
+} 
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="controls">
+      <div class="control-header">
+        <div id="route-directions"></div>
+      </div>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div class="info-panel" id="info-panel">
+      <p>Click two points on the map to create a route and see the elevation profile.</p>
+    </div>
+    
+    <div class="stats hidden" id="stats">
+      <div class="stat">
+        <span class="label">Distance:</span>
+        <span id="distance">-</span>
+      </div>
+      <div class="stat">
+        <span class="label">Duration:</span>
+        <span id="duration">-</span>
+      </div>
+      <div class="stat">
+        <span class="label">Elevation Gain:</span>
+        <span id="elevation-gain">-</span>
+      </div>
+      <div class="stat">
+        <span class="label">Elevation Loss:</span>
+        <span id="elevation-loss">-</span>
+      </div>
+    </div>
+    
+    <div class="elevation-chart hidden" id="elevation-chart">
+      <canvas id="chart" width="800" height="200"></canvas>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/@geoapify/route-directions@^1/dist/index.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <script>
+Chart.register(
+    Chart.LineElement,
+    Chart.LineController,
+    Chart.Legend,
+    Chart.Tooltip,
+    Chart.LinearScale,
+    Chart.PointElement,
+    Chart.Filler,
+    Chart.Title
+);
+
+let chartInstance;
+
+function createElevationChart(routeData) {
+    destroyChart();
+    
+    if (!routeData) {
+        return;
+    }
+    
+    let feature;
+    
+    if (routeData.type === 'Feature') {
+        feature = routeData;
+    } else if (routeData.type === 'FeatureCollection' && routeData.features && routeData.features.length > 0) {
+        feature = routeData.features[0];
+    } else {
+        console.error('Unexpected route data format for elevation chart:', routeData);
+        return;
+    }
+    
+    const elevationData = calculateElevationProfileData(feature);
+    
+    if (elevationData.data.length === 0) {
+        return;
+    }
+    
+    drawElevationProfile(elevationData);
+    updateRouteStats(feature, elevationData);
+    showElements();
+}
+
+function calculateElevationProfileData(feature) {
+    const legs = feature.properties.legs || [];
+    const labels = [];
+    const data = [];
+    
+    let totalDistance = 0;
+    
+    legs.forEach((leg, index) => {
+        if (leg.elevation_range) {
+            leg.elevation_range.forEach(([distance, elevation]) => {
+                labels.push(totalDistance + distance);
+                data.push(elevation);
+            });
+            totalDistance += leg.distance;
+        }
+    });
+    
+    // Optimize data for performance
+    const optimizedLabels = [];
+    const optimizedData = [];
+    const minDist = 50; // 50m
+    const minHeight = 5; // 5m
+    
+    labels.forEach((dist, index) => {
+        if (index === 0 || index === labels.length - 1 ||
+            (dist - optimizedLabels[optimizedLabels.length - 1]) > minDist ||
+            Math.abs(data[index] - optimizedData[optimizedData.length - 1]) > minHeight) {
+            optimizedLabels.push(dist);
+            optimizedData.push(data[index]);
+        }
+    });
+    
+    return {
+        labels: optimizedLabels,
+        data: optimizedData,
+        rawData: data
+    };
+}
+
+function drawElevationProfile(elevationData) {
+    const canvas = document.getElementById('chart');
+    const ctx = canvas.getContext('2d');
+    
+    const chartData = {
+        labels: elevationData.labels,
+        datasets: [{
+            data: elevationData.data,
+            fill: true,
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            tension: 0.1,
+            pointRadius: 0,
+            spanGaps: true
+        }]
+    };
+    
+    const config = {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'linear',
+                    min: Math.min(...elevationData.labels),
+                    max: Math.max(...elevationData.labels),
+                    title: {
+                        display: true,
+                        text: 'Distance (m)'
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    title: {
+                        display: true,
+                        text: 'Elevation (m)'
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Elevation Profile'
+                },
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    displayColors: false,
+                    callbacks: {
+                        title: (tooltipItems) => {
+                            return "Distance: " + Math.round(tooltipItems[0].label) + 'm';
+                        },
+                        label: (tooltipItem) => {
+                            return "Elevation: " + Math.round(tooltipItem.raw) + 'm';
+                        },
+                    }
+                }
+            }
+        }
+    };
+    
+    chartInstance = new Chart(ctx, config);
+}
+
+function updateRouteStats(feature, elevationData) {
+    const properties = feature.properties;
+    const distance = properties.distance || 0;
+    const time = properties.time || 0;
+    
+    const elevationStats = calculateElevationStats(elevationData.rawData);
+    
+    document.getElementById('distance').textContent = formatDistance(distance);
+    document.getElementById('duration').textContent = formatDuration(time);
+    document.getElementById('elevation-gain').textContent = formatElevation(elevationStats.gain);
+    document.getElementById('elevation-loss').textContent = formatElevation(elevationStats.loss);
+}
+
+function calculateElevationStats(elevationData) {
+    let gain = 0;
+    let loss = 0;
+    
+    for (let i = 1; i < elevationData.length; i++) {
+        const diff = elevationData[i] - elevationData[i - 1];
+        if (diff > 0) {
+            gain += diff;
+        } else {
+            loss += Math.abs(diff);
+        }
+    }
+    
+    return { gain, loss };
+}
+
+function formatDistance(meters) {
+    if (meters >= 1000) {
+        return (meters / 1000).toFixed(1) + ' km';
+    }
+    return Math.round(meters) + ' m';
+}
+
+function formatDuration(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    
+    if (hours > 0) {
+        return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
+}
+
+function formatElevation(meters) {
+    return Math.round(meters) + ' m';
+}
+
+function showElements() {
+    document.getElementById('info-panel').classList.add('hidden');
+    document.getElementById('stats').classList.remove('hidden');
+    document.getElementById('elevation-chart').classList.remove('hidden');
+}
+
+function hideElements() {
+    document.getElementById('info-panel').classList.remove('hidden');
+    document.getElementById('stats').classList.add('hidden');
+    document.getElementById('elevation-chart').classList.add('hidden');
+}
+
+function destroyChart() {
+    if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+    }
+}
+
+// Export for non-module usage
+window.createElevationChart = createElevationChart;
+window.destroyChart = destroyChart;
+window.hideElements = hideElements; 
+</script>
+  <script>
+// Using global functions
+
+const apiKey = "27a3c5f9a6754da28283d1995edb9467";
+
+const map = new maplibregl.Map({
+    container: 'map',
+    style: `https://maps.geoapify.com/v1/styles/osm-bright-smooth/style.json?apiKey=${apiKey}`,
+    center: [11.5753989, 48.1500327], // Munich (lng, lat)
+    zoom: 6
+});
+
+map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
+
+let waypoints = [];
+let markers = [];
+let currentMode = 'drive';
+
+map.on('click', handleMapClick);
+map.on('load', onMapLoad);
+
+const routeDirections = new directions.RouteDirections(document.getElementById("route-directions"), apiKey, {
+    supportedModes: ['walk', 'hike', 'scooter', 'motorcycle', 'drive', 'light_truck', 'medium_truck', 'truck', 'bicycle', 'mountain_bike', 'road_bike', 'bus'],
+    elevation: true,
+    noStopover: true
+}, {
+    placeholder: "Enter an address here or click on the map"
+});
+
+routeDirections.on('waypointChanged', (waypoint, reason) => {
+    const options = routeDirections.getOptions();
+    currentMode = options.mode || 'drive';
+    
+    const componentWaypoints = options.waypoints.filter(w => w.lat && w.lon);
+    waypoints = componentWaypoints.map(w => [w.lon, w.lat]);
+    
+    updateMarkers();
+    
+    if (waypoints.length < 2) {
+        clearRouteVisualization();
+        resetInfoPanel();
+    }
+});
+
+routeDirections.on('modeChanged', (mode) => {
+    currentMode = mode;
+});
+
+routeDirections.on('routeCalculated', (geojson) => {
+    visualizeRoute(geojson);
+    createElevationChart(geojson);
+});
+
+function onMapLoad() {
+    // Add route source
+    map.addSource('route', {
+        type: 'geojson',
+        data: {
+            type: 'FeatureCollection',
+            features: []
+        }
+    });
+
+    map.addLayer({
+        id: 'route',
+        type: 'line',
+        source: 'route',
+        layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+        },
+        paint: {
+            'line-color': '#007bff',
+            'line-width': 6
+        }
+    });
+}
+
+function handleMapClick(e) {
+    const coords = e.lngLat;
+    routeDirections.addLocation(coords.lat, coords.lng);
+}
+
+function updateMarkers() {
+    markers.forEach(marker => marker.remove());
+    markers = [];
+    
+    waypoints.forEach((waypoint, index) => {
+        const marker = new maplibregl.Marker({
+            color: index === 0 ? '#28a745' : '#dc3545'
+        })
+        .setLngLat([waypoint[0], waypoint[1]])
+        .setPopup(new maplibregl.Popup().setHTML(`
+            <div>
+                <strong>${index === 0 ? 'Start' : 'End'}</strong><br>
+                ${waypoint[1].toFixed(4)}, ${waypoint[0].toFixed(4)}
+            </div>
+        `))
+        .addTo(map);
+        
+        markers.push(marker);
+    });
+}
+
+function resetInfoPanel() {
+    const infoPanel = document.getElementById('info-panel');
+    const infoParagraph = infoPanel.querySelector('p');
+    
+    infoParagraph.textContent = 'Click two points on the map to create a route and see the elevation profile.';
+    infoPanel.classList.remove('error');
+}
+
+function visualizeRoute(routeData) {
+    let geoJsonData;
+    let routeFeature;
+    
+    if (routeData.type === 'Feature') {
+        geoJsonData = {
+            type: 'FeatureCollection',
+            features: [routeData]
+        };
+        routeFeature = routeData;
+    } else if (routeData.type === 'FeatureCollection' && routeData.features && routeData.features.length > 0) {
+        geoJsonData = routeData;
+        routeFeature = routeData.features[0];
+    } else {
+        console.error('Unexpected route data format:', routeData);
+        return;
+    }
+    
+    map.getSource('route').setData(geoJsonData);
+
+    if (routeFeature && routeFeature.geometry && routeFeature.geometry.coordinates) {
+        const coordinates = routeFeature.geometry.coordinates;
+        const bounds = new maplibregl.LngLatBounds();
+        
+        if (routeFeature.geometry.type === 'MultiLineString') {
+            coordinates.forEach(lineString => {
+                lineString.forEach(coord => {
+                    bounds.extend(coord);
+                });
+            });
+        } else {
+            coordinates.forEach(coord => {
+                bounds.extend(coord);
+            });
+        }
+        
+        waypoints.forEach(waypoint => {
+            bounds.extend([waypoint[0], waypoint[1]]);
+        });
+        
+        map.fitBounds(bounds, {
+            padding: {
+                top: 200,
+                bottom: 400, // Extra space for elevation panel
+                left: 200,
+                right: 200
+            },
+            duration: 1000 // Smooth animation
+        });
+    }
+}
+
+function clearRouteVisualization() {
+    if (map.getSource('route')) {
+        map.getSource('route').setData({
+            type: 'FeatureCollection',
+            features: []
+        });
+    }
+    
+    destroyChart();
+    hideElements();
+}
+</script>
+</body>
+</html> 
