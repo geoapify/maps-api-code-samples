@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>GPX Map Matching Explorer & MapLibre GL - Powered by Geoapify</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" inline>
+</head>
+
+<body>
+  <div class="demo-container">
+    <div id="map"></div>
+    <div class="sidebar">
+      <h2>GPX Map Matching</h2>
+      <p>Upload a GPX file to see the original GPS trace and its matched route</p>
+      
+      <div class="upload-section">
+        <input type="file" id="gpx-file-input" accept=".gpx,.xml" style="display: none;">
+        <button class="button upload-button" id="upload-button">Upload GPX File</button>
+        <div id="file-info" class="file-info hidden"></div>
+      </div>
+      
+      <div class="mode-section">
+        <h3>Travel Mode</h3>
+        <div class="travel-modes">
+          <label class="mode-option">
+            <input type="radio" name="travel-mode" value="walk" checked>
+            <span><i class="fas fa-walking"></i> Walk</span>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="travel-mode" value="drive">
+            <span><i class="fas fa-car"></i> Drive</span>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="travel-mode" value="bicycle">
+            <span><i class="fas fa-bicycle"></i> Bicycle</span>
+          </label>
+        </div>
+      </div>
+      
+      <button class="button match-button" id="match-button" disabled>Match to Roads</button>
+      <button class="button clear-button" id="clear-all-button">Clear All</button>
+      
+      <div id="summary-info" class="summary-info hidden">
+        <h3>Summary</h3>
+        <div id="summary-content"></div>
+      </div>
+      
+      <div id="download-section" class="download-section hidden">
+        <h3>Download Matched Route</h3>
+        <button class="button download-button" id="download-geojson">Download GeoJSON</button>
+        <button class="button download-button" id="download-gpx">Download GPX</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading indicator -->
+  <div id="loading-indicator" class="loading-overlay hidden">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Processing GPX file and matching to roads...</p>
+    </div>
+  </div>
+
+  <!-- Error dialog -->
+  <div id="error-dialog" class="dialog-overlay hidden">
+    <div class="dialog">
+      <h3>Error</h3>
+      <p id="error-message"></p>
+      <div class="form-buttons">
+        <button type="button" id="error-ok-button">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/togeojson@0.16.0/togeojson.js"></script>
+  <script src="https://unpkg.com/togpx@0.5.4/togpx.js"></script>
+  <script src="https://unpkg.com/simplify-js@1.2.4/simplify.js"></script>
+  <script type="module" src="helper/api.js" inline></script>
+  <script type="module" src="helper/file-utils.js" inline></script>
+  <script type="module" src="helper/map.js" inline></script>
+  <script type="module" src="demo.js" inline></script>
+</body>
+
+</html> 

@@ -12,6 +12,7 @@ Welcome to the **Geoapify Location Platform Code Samples** repository! This proj
 * [Visualize Isochrones with Leaflet](#javascript-visualize-isochrones-with-leaflet)
 * [Visualize Isochrones with MapLibre GL](#javascript-visualize-isochrones-with-maplibre-gl)
 * [Route Elevation Profile with MapLibre](#javascript-route-elevation-profile-with-maplibre)
+* [GPX Map Matching (Snap to Roads) with Geoapify & MapLibre GL](#javascript-gpx-map-matching-snap-to-roads-with-geoapify--maplibre-gl)
 
 ### Node.js
 
@@ -133,6 +134,36 @@ Users define start and end locations by clicking on the map or typing addresses.
 
 **Demo:**
 👉 [Route Elevation MapLibre Demo – Live](https://geoapify.github.io/maps-api-code-samples/javascript/route-directions-maplibre/demo_combined.html)
+
+---
+
+### JavaScript: [GPX Map Matching (Snap to Roads) with Geoapify & MapLibre GL](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/map-matching-to-snap-gpx-to-roads-maplibre)
+
+**What it does:**
+Takes GPS track data from a GPX file and snaps it to the road network based on travel mode (walking, driving, cycling).
+Displays both the original GPS trace and the snapped route on an interactive vector map, along with road attributes and summary details.
+
+**How it works:**
+Uses JavaScript and HTML to load GPX files, convert them to [GeoJSON](https://geojson.org/) using [toGeoJSON](https://github.com/mapbox/togeojson), and simplify them for optimal API performance.
+The [Geoapify Map Matching API](https://www.geoapify.com/map-matching-api/) aligns raw GPS points with real-world roads.
+Results are visualized using [MapLibre GL](https://maplibre.org/) with interactive popups for road attributes and options to download the matched route as GeoJSON or GPX.
+
+**Key features:**
+
+* Upload GPX file and preview the original track.
+* Snap raw GPS points to the nearest roads based on travel mode.
+* Display road attributes like road class, surface, speed limit, and lanes.
+* View a summary with original vs. matched distance and time.
+* Download snapped route as GeoJSON or GPX.
+
+**APIs used:**
+
+* [Geoapify Map Matching API](https://www.geoapify.com/map-matching-api/)
+* [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/) (for base map rendering)
+* [MapLibre GL JS](https://maplibre.org/) (interactive map rendering)
+
+**Demo:**
+👉 [GPX Map Matching – Live Demo](https://geoapify.github.io/maps-api-code-samples/javascript/map-matching-to-snap-gpx-to-roads-maplibre/demo_combined.html)
 
 ---
 
