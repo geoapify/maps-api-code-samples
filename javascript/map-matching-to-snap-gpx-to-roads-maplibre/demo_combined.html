@@ -417,13 +417,21 @@ body {
     <div class="sidebar">
       <h2>GPX Map Matching</h2>
       <p>Upload a GPX file to see the original GPS trace and its matched route</p>
-      
+
       <div class="upload-section">
         <input type="file" id="gpx-file-input" accept=".gpx,.xml" style="display: none;">
         <button class="button upload-button" id="upload-button">Upload GPX File</button>
+
+        <span style="font-size: 0.65em; color: #777;">You can download public GPX tracks for testing from
+          <a href="https://www.openstreetmap.org/traces" target="_blank"
+            rel="noopener noreferrer nofollow">OpenStreetMap
+            Traces</a>.
+        </span>
+
         <div id="file-info" class="file-info hidden"></div>
+
       </div>
-      
+
       <div class="mode-section">
         <h3>Travel Mode</h3>
         <div class="travel-modes">
@@ -441,15 +449,15 @@ body {
           </label>
         </div>
       </div>
-      
+
       <button class="button match-button" id="match-button" disabled>Match to Roads</button>
       <button class="button clear-button" id="clear-all-button">Clear All</button>
-      
+
       <div id="summary-info" class="summary-info hidden">
         <h3>Summary</h3>
         <div id="summary-content"></div>
       </div>
-      
+
       <div id="download-section" class="download-section hidden">
         <h3>Download Matched Route</h3>
         <button class="button download-button" id="download-geojson">Download GeoJSON</button>
@@ -1321,4 +1329,4 @@ function hideSummary() {
 } </script>
 </body>
 
-</html> 
+</html>
