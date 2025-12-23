@@ -13,6 +13,7 @@ Welcome to the **Geoapify Location Platform Code Samples** repository! This proj
 * [Visualize Isochrones with MapLibre GL](#javascript-visualize-isochrones-with-maplibre-gl)
 * [Route Elevation Profile with MapLibre](#javascript-route-elevation-profile-with-maplibre)
 * [GPX Map Matching (Snap to Roads) with Geoapify & MapLibre GL](#javascript-gpx-map-matching-snap-to-roads-with-geoapify--maplibre-gl)
+* [Nearest Supermarkets by Driving Time](#javascript-nearest-supermarkets-by-driving-time)
 
 ### Node.js
 
@@ -164,6 +165,35 @@ Results are visualized using [MapLibre GL](https://maplibre.org/) with interacti
 
 **Demo:**
 👉 [GPX Map Matching – Live Demo](https://geoapify.github.io/maps-api-code-samples/javascript/map-matching-to-snap-gpx-to-roads-maplibre/demo_combined.html)
+
+---
+
+### JavaScript: [Nearest Supermarkets by Driving Time](https://github.com/geoapify/maps-api-code-samples/tree/main/javascript/nearest-poi-get-places-sorted-by-driving-time)
+
+**What it does:**  
+Lets users click anywhere on the map to discover the nearest supermarkets (or any POI category) ranked by travel time instead of straight-line distance.
+
+**How it works:**  
+Uses the Geoapify Places API to fetch candidate POIs, the Route Matrix API to calculate time/distance for each travel mode, and the Routing API plus MapLibre GL to visualize routes. A sidebar keeps the ranked list, hover states, and travel stats in sync with the map markers.
+
+**Key features:**
+
+* Click-to-search UI with reset-to-Berlin shortcut.
+* Travel-mode switcher for cars, trucks, bikes, scooters, walking, etc.
+* Ranked sidebar with travel time, distance, and “Show Route” buttons.
+* Numbered markers produced by the Geoapify Map Marker API.
+* Single-file build via `inline-source` for easy static hosting.
+
+**APIs used:**
+
+* [Geoapify Places API](https://www.geoapify.com/places-api/)
+* [Geoapify Route Matrix API](https://www.geoapify.com/route-matrix-api/)
+* [Geoapify Routing API](https://www.geoapify.com/routing-api/)
+* [Geoapify Map Marker API](https://www.geoapify.com/map-marker-icon-api/)
+* [MapLibre GL JS](https://maplibre.org/)
+
+**Demo:**
+👉 [Nearest Supermarkets by Driving Time – Live Demo](https://geoapify.github.io/maps-api-code-samples/javascript/nearest-poi-get-places-sorted-by-driving-time/demo_combined.html)
 
 ---
 
