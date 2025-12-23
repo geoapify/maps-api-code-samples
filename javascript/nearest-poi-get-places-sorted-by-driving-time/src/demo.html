@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Nearest Supermarkets Finder - Powered by Geoapify</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <link rel="stylesheet" href="styles.css" inline>
+</head>
+
+<body>
+  <div class="demo-container">
+    <div id="map"></div>
+    <div class="sidebar">
+      <h2>Nearest Supermarkets</h2>
+      <p>Click on the map to find the 10 nearest supermarkets by travel time</p>
+      <div class="controls">
+        <div class="return-button-container">
+          <button class="button reset-button" id="reset-button">Reset to Berlin</button>
+        </div>        
+        <div class="form-group">
+          <label for="travel-mode">Travel Mode:</label>
+          <select id="travel-mode" name="travel-mode" required>
+            <option value="walk">Walk</option>
+            <option value="hike">Hike</option>
+            <option value="scooter">Scooter</option>
+            <option value="motorcycle">Motorcycle</option>
+            <option value="drive" selected>Drive</option>
+            <option value="truck">Truck</option>
+            <option value="light_truck">Light Truck</option>
+            <option value="medium_truck">Medium Truck</option>
+            <option value="truck_dangerous_goods">Truck Dangerous Goods</option>
+            <option value="heavy_truck">Heavy Truck</option>
+            <option value="long_truck">Long Truck</option>
+            <option value="bicycle">Bicycle</option>
+            <option value="mountain_bike">Mountain Bike</option>
+            <option value="road_bike">Road Bike</option>
+            <option value="bus">Bus</option>
+            <option value="drive_shortest">Drive Shortest</option>
+            <option value="drive_traffic_approximated">Drive Traffic Approximated</option>
+            <option value="truck_traffic_approximated">Truck Traffic Approximated</option>
+          </select>
+        </div>
+        
+      </div>
+
+
+
+      <div id="results-container" class="results-container">
+        <h3>Supermarkets</h3>
+        <div id="results-list" class="results-list">
+          <div class="no-results">
+            <p>Click on the map to select a location and to find nearby supermarkets</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="status" class="status-info">
+        <p>Supermarkets found: <span id="supermarkets-count">0</span></p>
+        <p>Max search radius: <span id="search-radius">10 km</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading-indicator" class="loading-overlay hidden">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p id="loading-text">Loading supermarkets...</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script type="module" src="helper/places-api.js" inline></script>
+  <script type="module" src="helper/route-matrix-api.js" inline></script>
+  <script type="module" src="helper/routing-api.js" inline></script>
+  <script type="module" src="helper/map-helper.js" inline></script>
+  <script type="module" src="demo.js" inline></script>
+</body>
+</html> 

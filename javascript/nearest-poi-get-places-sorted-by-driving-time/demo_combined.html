@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Nearest Supermarkets Finder - Powered by Geoapify</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <style>html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.demo-container {
+    flex: 1;
+    max-height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.sidebar {
+    width: 380px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-left: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar h2 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.sidebar p {
+    margin: 0 0 20px 0;
+    color: #666;
+    line-height: 1.5;
+    text-align: center;
+    font-size: 14px;
+}
+
+#map {
+    flex: 1;
+    min-height: 400px;
+    cursor: crosshair;
+}
+
+.button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.reset-button {
+    background: #17a2b8;
+    color: white;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.reset-button:hover {
+    background: #138496;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+}
+
+.route-button {
+    background: #28a745;
+    color: white;
+    font-size: 11px;
+    padding: 6px 12px;
+    margin-top: 8px;
+}
+
+.route-button:hover {
+    background: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.button:active {
+    transform: translateY(0);
+}
+
+/* Controls section */
+.controls {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+
+
+/* Results container */
+.results-container {
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.results-container h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.2em;
+    text-align: center;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 8px;
+}
+
+.results-list {
+    max-height: calc(100vh - 470px);
+    overflow-y: auto;
+}
+
+.no-results {
+    text-align: center;
+    padding: 30px 20px;
+    color: #6c757d;
+}
+
+.no-results p {
+    margin: 0;
+    font-style: italic;
+}
+
+.result-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    padding: 15px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.result-item:hover {
+    background: #f8f9fa;
+    border-color: #007bff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.1);
+}
+
+.result-item.highlighted {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.result-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 15px;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.result-rank {
+    background: #007bff;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.result-address {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.result-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.stat {
+    text-align: center;
+    flex: 1;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: #007bff;
+    font-size: 14px;
+    display: block;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Status info */
+.status-info {
+    background: #e9ecef;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: auto;
+}
+
+.status-info p {
+    margin: 5px 0;
+    font-size: 13px;
+    color: #495057;
+    text-align: left;
+}
+
+.status-info span {
+    font-weight: 600;
+    color: #007bff;
+}
+
+/* Loading indicator */
+.loading-overlay {
+    position: fixed;
+    top: 20px;
+    left: calc(50% - 175px);
+    transform: translateX(-50%);
+    width: auto;
+    height: auto;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.loading-spinner {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px 20px;
+    border-radius: 20px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #e3f2fd;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.loading-spinner p {
+    margin: 0;
+    color: #555;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .demo-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        border-left: none;
+        border-bottom: 1px solid #e9ecef;
+        padding: 15px;
+        max-height: 60vh;
+        overflow: scroll;
+        max-width: calc(100% - 30px);
+    }
+    
+    .sidebar h2 {
+        font-size: 1.3em;
+        margin-bottom: 8px;
+    }
+    
+    .sidebar p {
+        margin-bottom: 15px;
+        font-size: 13px;
+    }
+    
+    .controls {
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .results-list {
+        max-height: none;
+        overflow: hidden;
+    }
+    
+    .result-item {
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+    
+    .result-name {
+        font-size: 14px;
+    }
+    
+    .result-rank {
+        width: 20px;
+        height: 20px;
+        font-size: 11px;
+    }
+    
+    .route-button {
+        font-size: 10px;
+        padding: 5px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        padding: 12px;
+    }
+    
+    .controls {
+        padding: 10px;
+    }
+    
+    .result-item {
+        padding: 10px;
+    }
+    
+    .result-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .stat {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .stat-value {
+        font-size: 13px;
+    }
+    
+    .stat-label {
+        font-size: 10px;
+    }
+} </style>
+</head>
+
+<body>
+  <div class="demo-container">
+    <div id="map"></div>
+    <div class="sidebar">
+      <h2>Nearest Supermarkets</h2>
+      <p>Click on the map to find the 10 nearest supermarkets by travel time</p>
+      <div class="controls">
+        <div class="return-button-container">
+          <button class="button reset-button" id="reset-button">Reset to Berlin</button>
+        </div>        
+        <div class="form-group">
+          <label for="travel-mode">Travel Mode:</label>
+          <select id="travel-mode" name="travel-mode" required>
+            <option value="walk">Walk</option>
+            <option value="hike">Hike</option>
+            <option value="scooter">Scooter</option>
+            <option value="motorcycle">Motorcycle</option>
+            <option value="drive" selected>Drive</option>
+            <option value="truck">Truck</option>
+            <option value="light_truck">Light Truck</option>
+            <option value="medium_truck">Medium Truck</option>
+            <option value="truck_dangerous_goods">Truck Dangerous Goods</option>
+            <option value="heavy_truck">Heavy Truck</option>
+            <option value="long_truck">Long Truck</option>
+            <option value="bicycle">Bicycle</option>
+            <option value="mountain_bike">Mountain Bike</option>
+            <option value="road_bike">Road Bike</option>
+            <option value="bus">Bus</option>
+            <option value="drive_shortest">Drive Shortest</option>
+            <option value="drive_traffic_approximated">Drive Traffic Approximated</option>
+            <option value="truck_traffic_approximated">Truck Traffic Approximated</option>
+          </select>
+        </div>
+        
+      </div>
+
+
+
+      <div id="results-container" class="results-container">
+        <h3>Supermarkets</h3>
+        <div id="results-list" class="results-list">
+          <div class="no-results">
+            <p>Click on the map to select a location and to find nearby supermarkets</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="status" class="status-info">
+        <p>Supermarkets found: <span id="supermarkets-count">0</span></p>
+        <p>Max search radius: <span id="search-radius">10 km</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading-indicator" class="loading-overlay hidden">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p id="loading-text">Loading supermarkets...</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script type="module">export class PlacesAPI {
+    constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.baseUrl = 'https://api.geoapify.com/v2/places';
+    }
+
+    async findSupermarkets(location, radius = 10000, limit = 10) {
+        const { lat, lng } = location;
+        
+        const params = new URLSearchParams({
+            categories: 'commercial.supermarket',
+            filter: `circle:${lng},${lat},${radius}`,
+            bias: `proximity:${lng},${lat}`,
+            limit: limit,
+            apiKey: this.apiKey
+        });
+        
+        const url = `${this.baseUrl}?${params.toString()}`;
+        
+        try {
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return this.processSupermarkets(data.features || []);
+        } catch (error) {
+            console.error('Error fetching supermarkets:', error);
+            throw error;
+        }
+    }
+
+    processSupermarkets(features) {
+        return features.map((feature, index) => {
+            const props = feature.properties;
+            const geometry = feature.geometry;
+            
+            return {
+                id: props.place_id || `supermarket_${index}`,
+                name: props.name || 'Unknown Supermarket',
+                address: props.formatted || 'No address available',
+                coordinates: {
+                    lat: geometry.coordinates[1],
+                    lng: geometry.coordinates[0]
+                },
+                categories: props.categories || [],
+                contact: {
+                    phone: props.contact?.phone,
+                    website: props.website || props.contact?.website
+                },
+                original: feature
+            };
+        });
+    }
+
+
+}
+
+
+if (typeof window !== 'undefined') {
+    window.PlacesAPI = PlacesAPI;
+} </script>
+  <script type="module">export class RouteMatrixAPI {
+    constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.baseUrl = 'https://api.geoapify.com/v1/routematrix';
+    }
+
+    async calculateTravelTimes(origin, destinations, mode = 'drive') {
+        const sources = [{
+            location: [origin.lng, origin.lat]
+        }];
+        
+        const targets = destinations.map(dest => ({
+            location: [dest.coordinates.lng, dest.coordinates.lat]
+        }));
+
+        const requestBody = {
+            mode: mode,
+            sources: sources,
+            targets: targets
+        };
+
+        try {
+            const response = await fetch(`${this.baseUrl}?apiKey=${this.apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Route Matrix API error response:', errorText);
+                throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+            }
+
+            const data = await response.json();
+            return this.processMatrixResults(data, destinations);
+        } catch (error) {
+            console.error('Error calculating travel times:', error);
+            throw error;
+        }
+    }
+
+    processMatrixResults(matrixData, destinations) {
+        const results = [];
+        
+        if (!matrixData.sources_to_targets || !matrixData.sources_to_targets[0]) {
+            throw new Error('Invalid matrix response');
+        }
+
+        const matrixRow = matrixData.sources_to_targets[0];
+        
+        destinations.forEach((destination, index) => {
+            const matrixCell = matrixRow[index];
+            
+            if (matrixCell && matrixCell.time !== undefined && matrixCell.distance !== undefined) {
+                results.push({
+                    ...destination,
+                    travelTime: matrixCell.time,
+                    distance: matrixCell.distance,
+                    travelTimeFormatted: this.formatTime(matrixCell.time),
+                    distanceFormatted: this.formatDistance(matrixCell.distance)
+                });
+            } else {
+                results.push({
+                    ...destination,
+                    travelTime: null,
+                    distance: null,
+                    travelTimeFormatted: 'N/A',
+                    distanceFormatted: 'N/A'
+                });
+            }
+        });
+        return results.sort((a, b) => {
+            if (a.travelTime === null) return 1;
+            if (b.travelTime === null) return -1;
+            return a.travelTime - b.travelTime;
+        });
+    }
+
+    formatTime(seconds) {
+        if (seconds === null || seconds === undefined) return 'N/A';
+        
+        const minutes = Math.round(seconds / 60);
+        
+        if (minutes < 5) {
+            return `${Math.floor(seconds / 60)} min ${seconds % 60} sec`;
+        } else if (minutes < 60) {
+            return `${minutes} min`;
+        } else {
+            const hours = Math.floor(minutes / 60);
+            const remainingMinutes = minutes % 60;
+            return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+        }
+    }
+
+    formatDistance(meters) {
+        if (meters === null || meters === undefined) return 'N/A';
+        
+        if (meters < 1000) {
+            return `${Math.round(meters)} m`;
+        } else {
+            const kilometers = (meters / 1000).toFixed(1);
+            return `${kilometers} km`;
+        }
+    }
+
+
+}
+
+
+if (typeof window !== 'undefined') {
+    window.RouteMatrixAPI = RouteMatrixAPI;
+} </script>
+  <script type="module">export class RoutingAPI {
+    constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.baseUrl = 'https://api.geoapify.com/v1/routing';
+    }
+
+    async getRoute(origin, destination, mode = 'drive') {
+        const params = new URLSearchParams({
+            waypoints: `${origin.lat},${origin.lng}|${destination.coordinates.lat},${destination.coordinates.lng}`,
+            mode: mode,
+            apiKey: this.apiKey
+        });
+        
+        const url = `${this.baseUrl}?${params.toString()}`;
+        
+        try {
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return this.processRouteData(data, origin, destination);
+        } catch (error) {
+            console.error('Error fetching route:', error);
+            throw error;
+        }
+    }
+
+    processRouteData(routeData, origin, destination) {
+        if (!routeData.features || routeData.features.length === 0) {
+            throw new Error('No route found');
+        }
+
+        const route = routeData.features[0];
+        const properties = route.properties;
+        
+        return {
+            geometry: route.geometry,
+            distance: properties.distance,
+            time: properties.time,
+            distanceFormatted: this.formatDistance(properties.distance),
+            timeFormatted: this.formatTime(properties.time),
+            origin: origin,
+            destination: destination,
+            mode: properties.mode || 'drive',
+            waypoints: properties.waypoints || []
+        };
+    }
+
+    formatTime(seconds) {
+        if (seconds === null || seconds === undefined) return 'N/A';
+        
+        const minutes = Math.round(seconds / 60);
+        
+        if (minutes < 60) {
+            return `${minutes} min`;
+        } else {
+            const hours = Math.floor(minutes / 60);
+            const remainingMinutes = minutes % 60;
+            return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+        }
+    }
+
+    formatDistance(meters) {
+        if (meters === null || meters === undefined) return 'N/A';
+        
+        if (meters < 1000) {
+            return `${Math.round(meters)} m`;
+        } else {
+            const kilometers = (meters / 1000).toFixed(1);
+            return `${kilometers} km`;
+        }
+    }
+
+
+}
+
+
+if (typeof window !== 'undefined') {
+    window.RoutingAPI = RoutingAPI;
+} </script>
+  <script type="module">export class MapHelper {
+    constructor(apiKey, defaultCenter, defaultZoom) {
+        this.apiKey = apiKey;
+        this.defaultCenter = defaultCenter;
+        this.defaultZoom = defaultZoom;
+        this.map = null;
+        this.routeLayerId = 'route-layer';
+        this.routeSourceId = 'route-source';
+    }
+
+    initialize(containerId) {
+        this.map = new maplibregl.Map({
+            container: containerId,
+            style: `https://maps.geoapify.com/v1/styles/osm-bright/style.json?apiKey=${this.apiKey}`,
+            center: this.defaultCenter,
+            zoom: this.defaultZoom
+        });
+
+        this.map.addControl(new maplibregl.NavigationControl());
+
+        this.map.on('load', () => {
+            this.setupRouteLayer();
+        });
+
+        return this.map;
+    }
+
+    setupRouteLayer() {
+        this.map.addSource(this.routeSourceId, {
+            'type': 'geojson',
+            'data': {
+                'type': 'FeatureCollection',
+                'features': []
+            }
+        });
+        this.map.addLayer({
+            'id': this.routeLayerId,
+            'type': 'line',
+            'source': this.routeSourceId,
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#007bff',
+                'line-width': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    12, 4,
+                    18, 12
+                ]
+            }
+        });
+    }
+
+    onMapClick(callback) {
+        this.map.on('click', (e) => {
+            if (this.suppressMapClick) {
+                return;
+            }
+
+            const features = this.map.queryRenderedFeatures(e.point, {
+                layers: ['supermarket-markers']
+            });
+            
+            if (features.length > 0) {
+                return;
+            }
+
+            const { lat, lng } = e.lngLat;
+            callback({ lat, lng });
+        });
+    }
+
+    async setupUserLocationLayer() {
+        if (!this.map.hasImage('user-location-icon')) {
+            const iconUrl = `https://api.geoapify.com/v2/icon/?type=material&color=red&size=50&icon=location&iconType=awesome&contentSize=16&scaleFactor=2&apiKey=${this.apiKey}`;
+            
+            try {
+                const image = await this.map.loadImage(iconUrl);
+                this.map.addImage('user-location-icon', image.data);
+            } catch (error) {
+                console.error('Failed to load user location icon:', error);
+            }
+        }
+        if (!this.map.getSource('user-location')) {
+            this.map.addSource('user-location', {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                }
+            });
+        }
+        if (!this.map.getLayer('user-location-icon')) {
+            this.map.addLayer({
+                id: 'user-location-icon',
+                type: 'symbol',
+                source: 'user-location',
+                layout: {
+                    'icon-image': 'user-location-icon',
+                    'icon-ignore-placement': true,
+                    'icon-size': 0.5,
+                    'icon-anchor': 'bottom',
+                    'icon-allow-overlap': true,
+                    'icon-offset': [0, 5]
+                }
+            });
+        }
+    }
+
+    async setUserLocation(location) {
+        await this.setupUserLocationLayer();
+        const feature = {
+            type: 'Feature',
+            properties: {
+                type: 'user-location'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [location.lng, location.lat]
+            }
+        };
+
+        this.map.getSource('user-location').setData({
+            type: 'FeatureCollection',
+            features: [feature]
+        });
+    }
+
+    async setupSupermarketLayers() {
+        for (let i = 1; i <= 10; i++) {
+            const iconName = `supermarket-icon-${i}`;
+            if (!this.map.hasImage(iconName)) {
+                const iconUrl = `https://api.geoapify.com/v2/icon/?type=awesome&color=%2300B894&size=50&text=${i}&iconType=awesome&contentSize=16&contentColor=%2300B894&scaleFactor=2&apiKey=${this.apiKey}`;
+                
+                try {
+                    const image = await this.map.loadImage(iconUrl);
+                    this.map.addImage(iconName, image.data);
+                } catch (error) {
+                    console.error(`Failed to load supermarket icon ${i}:`, error);
+                }
+            }
+        }
+        if (!this.map.getSource('supermarkets')) {
+            this.map.addSource('supermarkets', {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: []
+                }
+            });
+        }
+
+        if (!this.map.getLayer('supermarket-markers')) {
+            this.map.addLayer({
+                id: 'supermarket-markers',
+                type: 'symbol',
+                source: 'supermarkets',
+                layout: {
+                    'icon-image': ['concat', 'supermarket-icon-', ['to-string', ['get', 'rank']]],
+                    'icon-size': 0.5,
+                    'icon-ignore-placement': true,
+                    'icon-anchor': 'bottom',
+                    'icon-allow-overlap': true
+                },
+                paint: {
+                    'icon-translate': [0, 6]
+                }
+            });
+        }
+
+        this.setupSupermarketEvents();
+    }
+
+    setupSupermarketEvents() {
+        this.map.off('click', 'supermarket-markers');
+        this.map.off('mouseenter', 'supermarket-markers');
+        this.map.off('mouseleave', 'supermarket-markers');
+        this.map.on('click', 'supermarket-markers', (e) => {
+            this.handleSupermarketClick(e);
+        });
+        this.map.on('mouseenter', 'supermarket-markers', (e) => {
+            this.map.getCanvas().style.cursor = 'pointer';
+            if (this.onSupermarketHover && e.features && e.features.length > 0) {
+                const supermarket = this.supermarketData.find(s => s.id === e.features[0].properties.id);
+                if (supermarket) {
+                    this.onSupermarketHover(supermarket, true);
+                }
+            }
+        });
+        
+        this.map.on('mouseleave', 'supermarket-markers', (e) => {
+            this.map.getCanvas().style.cursor = '';
+            if (this.onSupermarketHover && e.features && e.features.length > 0) {
+                const supermarket = this.supermarketData.find(s => s.id === e.features[0].properties.id);
+                if (supermarket) {
+                    this.onSupermarketHover(supermarket, false);
+                }
+            }
+        });
+    }
+
+    handleSupermarketClick(e) {
+        e.preventDefault();
+        if (e.originalEvent) {
+            e.originalEvent.stopPropagation();
+        }
+
+        this.suppressMapClick = true;
+        setTimeout(() => {
+            this.suppressMapClick = false;
+        }, 50);
+
+        const feature = e.features[0];
+        const properties = feature.properties;
+
+        const supermarket = this.supermarketData.find(s => s.id === properties.id);
+        if (!supermarket) return;
+
+        if (this.onSupermarketClick) {
+            this.onSupermarketClick(supermarket);
+        }
+    }
+
+    async addSupermarketMarkers(supermarkets, onMarkerHover, onMarkerClick) {
+        this.onSupermarketHover = onMarkerHover;
+        this.onSupermarketClick = onMarkerClick;
+        this.supermarketData = supermarkets;
+
+        await this.setupSupermarketLayers();
+        const features = supermarkets.map((supermarket, index) => ({
+            type: 'Feature',
+            properties: {
+                id: supermarket.id,
+                rank: index + 1,
+                name: supermarket.name || 'Unknown',
+                address: supermarket.address || '',
+                travelTime: supermarket.travelTime || 0,
+                distance: supermarket.distance || 0,
+                highlighted: false
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [supermarket.coordinates.lng, supermarket.coordinates.lat]
+            }
+        }));
+
+        this.map.getSource('supermarkets').setData({
+            type: 'FeatureCollection',
+            features: features
+        });
+
+        if (this.map.getLayer('supermarket-markers')) {
+            this.map.setLayoutProperty('supermarket-markers', 'icon-size', 0.5);
+            this.map.setPaintProperty('supermarket-markers', 'icon-opacity', 1.0);
+        }
+    }
+
+
+
+    highlightSupermarketMarker(supermarketId, highlight = true) {
+        if (!this.supermarketData || !this.map.getSource('supermarkets')) return;
+
+        const features = this.supermarketData.map((supermarket, index) => ({
+            type: 'Feature',
+            properties: {
+                id: supermarket.id,
+                rank: index + 1,
+                name: supermarket.name || 'Unknown',
+                address: supermarket.address || '',
+                travelTime: supermarket.travelTime || 0,
+                distance: supermarket.distance || 0,
+                highlighted: highlight && supermarket.id === supermarketId
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [supermarket.coordinates.lng, supermarket.coordinates.lat]
+            }
+        }));
+
+        this.map.getSource('supermarkets').setData({
+            type: 'FeatureCollection',
+            features: features
+        });
+        if (this.map.getLayer('supermarket-markers')) {
+            this.map.setLayoutProperty('supermarket-markers', 'icon-size', [
+                'case',
+                ['get', 'highlighted'],
+                0.6,
+                highlight ? 0.4 : 0.5
+            ]);
+            
+            this.map.setPaintProperty('supermarket-markers', 'icon-opacity', [
+                'case',
+                ['get', 'highlighted'],
+                1.0,
+                highlight ? 0.6 : 1.0
+            ]);
+        }
+    }
+
+    clearSupermarketMarkers() {
+        if (this.map.getSource('supermarkets')) {
+            this.map.getSource('supermarkets').setData({
+                type: 'FeatureCollection',
+                features: []
+            });
+        }
+        this.supermarketData = [];
+    }
+
+    displayRoute(routeGeometry, mode = 'drive') {
+        if (!this.map.getSource(this.routeSourceId)) {
+            this.setupRouteLayer();
+        }
+
+        const routeGeoJSON = {
+            'type': 'Feature',
+            'properties': {},
+            'geometry': routeGeometry
+        };
+        this.map.getSource(this.routeSourceId).setData({
+            'type': 'FeatureCollection',
+            'features': [routeGeoJSON]
+        });
+        const routeStyle = this.getRouteStyle(mode);
+        Object.keys(routeStyle.paint).forEach(property => {
+            this.map.setPaintProperty(this.routeLayerId, property, routeStyle.paint[property]);
+        });
+    }
+
+    getRouteStyle(mode = 'drive') {
+        switch (mode) {
+            case 'walk':
+                return {
+                    'paint': {
+                        'line-color': '#FF6B35',
+                        'line-width': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            12, 3,
+                            18, 8
+                        ],
+                        'line-dasharray': [2, 2]
+                    }
+                };
+            case 'drive':
+            default:
+                return {
+                    'paint': {
+                        'line-color': '#007bff',
+                        'line-width': [
+                            'interpolate',
+                            ['linear'],
+                            ['zoom'],
+                            12, 4,
+                            18, 12
+                        ]
+                    }
+                };
+        }
+    }
+
+    clearRoute() {
+        if (this.map.getSource(this.routeSourceId)) {
+            this.map.getSource(this.routeSourceId).setData({
+                'type': 'FeatureCollection',
+                'features': []
+            });
+        }
+    }
+
+    fitToUserLocationAndMarkers(userLocation, supermarkets) {
+        if (supermarkets.length === 0) {
+            this.map.flyTo({
+                center: [userLocation.lng, userLocation.lat],
+                zoom: 15,
+                duration: 1000
+            });
+            return;
+        }
+        const coordinates = [
+            [userLocation.lng, userLocation.lat],
+            ...supermarkets.map(s => [s.coordinates.lng, s.coordinates.lat])
+        ];
+
+        const bounds = coordinates.reduce((bounds, coord) => {
+            return bounds.extend(coord);
+        }, new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
+
+        this.map.fitBounds(bounds, {
+            padding: 50,
+            duration: 1000
+        });
+    }
+
+    fitToRoute(routeGeometry) {
+        if (!routeGeometry) {
+            console.error('No route geometry provided');
+            return;
+        }
+        
+        let coordinates;
+        
+        if (routeGeometry.type === 'LineString' && routeGeometry.coordinates) {
+            coordinates = routeGeometry.coordinates;
+        } else if (routeGeometry.type === 'MultiLineString' && routeGeometry.coordinates) {
+            coordinates = routeGeometry.coordinates.flat();
+        } else if (Array.isArray(routeGeometry.coordinates)) {
+            coordinates = routeGeometry.coordinates;
+        } else {
+            console.error('Invalid route geometry format:', routeGeometry);
+            return;
+        }
+        
+        if (!Array.isArray(coordinates) || coordinates.length === 0) {
+            console.error('Invalid coordinates array:', coordinates);
+            return;
+        }
+        
+        let minLng = Infinity, minLat = Infinity;
+        let maxLng = -Infinity, maxLat = -Infinity;
+        
+        coordinates.forEach(coord => {
+            if (!Array.isArray(coord) || coord.length < 2) {
+                console.warn('Invalid coordinate pair:', coord);
+                return;
+            }
+            
+            const lng = coord[0];
+            const lat = coord[1];
+            
+            if (typeof lng !== 'number' || typeof lat !== 'number' || isNaN(lng) || isNaN(lat)) {
+                console.warn('Invalid coordinate values:', lng, lat);
+                return;
+            }
+            
+            minLng = Math.min(minLng, lng);
+            maxLng = Math.max(maxLng, lng);
+            minLat = Math.min(minLat, lat);
+            maxLat = Math.max(maxLat, lat);
+        });
+        if (!isFinite(minLng) || !isFinite(maxLng) || !isFinite(minLat) || !isFinite(maxLat)) {
+            console.error('Could not calculate valid bounds from coordinates');
+            return;
+        }
+        
+        const bounds = new maplibregl.LngLatBounds([minLng, minLat], [maxLng, maxLat]);
+        
+        this.map.fitBounds(bounds, {
+            padding: 50,
+            duration: 1000
+        });
+    }
+
+    resetToDefaultLocation() {
+        this.map.flyTo({
+            center: this.defaultCenter,
+            zoom: this.defaultZoom,
+            duration: 1000
+        });
+    }
+
+
+
+    onLoad(callback) {
+        this.map.on('load', callback);
+    }
+}
+
+
+if (typeof window !== 'undefined') {
+    window.MapHelper = MapHelper;
+} 
+</script>
+  <script type="module">const GEOAPIFY_API_KEY = '27a3c5f9a6754da28283d1995edb9467';
+const BERLIN_CENTER = [13.4050, 52.5200];
+const DEFAULT_ZOOM = 13;
+const SEARCH_RADIUS = 3000;
+const MAX_SUPERMARKETS = 10;
+const placesAPI = new PlacesAPI(GEOAPIFY_API_KEY);
+const routeMatrixAPI = new RouteMatrixAPI(GEOAPIFY_API_KEY);
+const routingAPI = new RoutingAPI(GEOAPIFY_API_KEY);
+const mapHelper = new MapHelper(GEOAPIFY_API_KEY, BERLIN_CENTER, DEFAULT_ZOOM);
+let currentLocation = null;
+let currentSupermarkets = [];
+let isLoading = false;
+let selectedTravelMode = 'drive';
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
+function initializeApp() {
+    mapHelper.initialize('map');
+    setupEventListeners();
+    setLocationToBerlin();
+    updateUI();
+}
+
+function setupEventListeners() {
+    mapHelper.onMapClick(handleMapClick);
+    document.getElementById('reset-button').addEventListener('click', handleResetLocation);
+    document.getElementById('travel-mode').addEventListener('change', handleTravelModeChange);
+    mapHelper.onLoad(() => {});
+}
+
+async function handleMapClick(location) {
+    if (isLoading) return;
+    
+    currentLocation = location;
+    showLoadingIndicator('Finding location...');
+    
+    try {
+        await mapHelper.setUserLocation(location);
+        await findAndDisplaySupermarkets(location);
+    } catch (error) {
+        console.error('Error handling map click:', error);
+        showErrorMessage('Failed to process location. Please try again.');
+    } finally {
+        hideLoadingIndicator();
+    }
+}
+
+
+
+async function findAndDisplaySupermarkets(location) {
+    showLoadingIndicator('Finding supermarkets...');
+    
+    try {
+        const supermarkets = await placesAPI.findSupermarkets(location, SEARCH_RADIUS, MAX_SUPERMARKETS * 2 /* We query more data to get nearest by travel time*/);
+        
+        if (supermarkets.length === 0) {
+            showNoResults();
+            return;
+        }
+        
+        showLoadingIndicator('Calculating travel times...');
+        const supermarketsWithTravelInfo = await routeMatrixAPI.calculateTravelTimes(
+            location, 
+            supermarkets, 
+            selectedTravelMode
+        );
+        
+        currentSupermarkets = supermarketsWithTravelInfo;
+        currentSupermarkets.length = Math.min(currentSupermarkets.length, MAX_SUPERMARKETS);
+        
+        await mapHelper.addSupermarketMarkers(
+            supermarketsWithTravelInfo,
+            handleMarkerHover,
+            handleMarkerClick
+        );
+        
+        displaySupermarketsList(supermarketsWithTravelInfo);
+        mapHelper.fitToUserLocationAndMarkers(location, supermarketsWithTravelInfo);
+        updateUI();
+        
+    } catch (error) {
+        console.error('Error finding supermarkets:', error);
+        showErrorMessage('Failed to find supermarkets. Please try again.');
+    } finally {
+        hideLoadingIndicator();
+    }
+}
+
+function displaySupermarketsList(supermarkets) {
+    const resultsList = document.getElementById('results-list');
+    
+    if (supermarkets.length === 0) {
+        resultsList.innerHTML = `
+            <div class="no-results">
+                <p>No supermarkets found within ${SEARCH_RADIUS / 1000} km radius.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    resultsList.innerHTML = supermarkets.map((supermarket, index) => 
+        createSupermarketResultItem(supermarket, index + 1)
+    ).join('');
+    supermarkets.forEach((supermarket, index) => {
+        const resultItem = document.querySelector(`[data-result-id="${supermarket.id}"]`);
+        const routeButton = resultItem.querySelector('.route-button');
+        
+        resultItem.addEventListener('mouseenter', () => {
+            resultItem.classList.add('highlighted');
+            mapHelper.highlightSupermarketMarker(supermarket.id, true);
+        });
+        
+        resultItem.addEventListener('mouseleave', () => {
+            resultItem.classList.remove('highlighted');
+            mapHelper.highlightSupermarketMarker(supermarket.id, false);
+        });
+        
+        routeButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showRoute(supermarket);
+        });
+        
+        resultItem.addEventListener('click', () => {
+            mapHelper.map.flyTo({
+                center: [supermarket.coordinates.lng, supermarket.coordinates.lat],
+                zoom: 16,
+                duration: 1000
+            });
+        });
+    });
+}
+
+function createSupermarketResultItem(supermarket, rank) {
+    return `
+        <div class="result-item" data-result-id="${supermarket.id}">
+            <div class="result-header">
+                <div class="result-name">${supermarket.name}</div>
+                <div class="result-rank">${rank}</div>
+            </div>
+            <div class="result-address">${supermarket.address}</div>
+            <div class="result-stats">
+                <div class="stat">
+                    <span class="stat-value">${supermarket.travelTimeFormatted}</span>
+                    <span class="stat-label">Travel Time</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">${supermarket.distanceFormatted}</span>
+                    <span class="stat-label">Distance</span>
+                </div>
+            </div>
+                            <button class="button route-button">Show Route</button>
+        </div>
+    `;
+}
+
+async function showRoute(supermarket) {
+    if (!currentLocation) return;
+    
+    showLoadingIndicator('Calculating route...');
+    
+    try {
+        const route = await routingAPI.getRoute(currentLocation, supermarket, selectedTravelMode);
+        
+        mapHelper.displayRoute(route.geometry, selectedTravelMode);
+        mapHelper.fitToRoute(route.geometry);
+        
+    } catch (error) {
+        console.error('Error showing route:', error);
+        showErrorMessage('Failed to calculate route. Please try again.');
+    } finally {
+        hideLoadingIndicator();
+    }
+}
+
+function handleMarkerHover(supermarket, isHovering) {
+    const resultItem = document.querySelector(`[data-result-id="${supermarket.id}"]`);
+    if (resultItem) {
+        if (isHovering) {
+            resultItem.classList.add('highlighted');
+        } else {
+            resultItem.classList.remove('highlighted');
+        }
+    }
+}
+
+function handleMarkerClick(supermarket) {
+    const resultItem = document.querySelector(`[data-result-id="${supermarket.id}"]`);
+    if (resultItem) {
+        resultItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        resultItem.classList.add('highlighted');
+        setTimeout(() => {
+            resultItem.classList.remove('highlighted');
+        }, 2000);
+    }
+}
+
+async function handleResetLocation() {
+    await setLocationToBerlin();
+}
+
+async function setLocationToBerlin() {
+    const berlinLocation = { lat: BERLIN_CENTER[1], lng: BERLIN_CENTER[0] };
+    
+    currentLocation = berlinLocation;
+    currentSupermarkets = [];
+    
+    mapHelper.resetToDefaultLocation();
+    mapHelper.clearRoute();
+    mapHelper.clearSupermarketMarkers();
+    
+    await mapHelper.setUserLocation(berlinLocation);
+    findAndDisplaySupermarkets(berlinLocation);
+    updateUI();
+}
+
+async function handleTravelModeChange(event) {
+    const newMode = event.target.value;
+    
+    if (newMode === selectedTravelMode) return;
+    
+    selectedTravelMode = newMode;
+    mapHelper.clearRoute();
+    
+    if (currentLocation && currentSupermarkets.length > 0) {
+        await findAndDisplaySupermarkets(currentLocation);
+    }
+}
+
+
+
+function showNoResults() {
+    const resultsList = document.getElementById('results-list');
+    resultsList.innerHTML = `
+        <div class="no-results">
+            <p>No supermarkets found within ${SEARCH_RADIUS / 1000} km radius.</p>
+            <p>Try selecting a different location.</p>
+        </div>
+    `;
+    
+    mapHelper.clearSupermarketMarkers();
+    
+    currentSupermarkets = [];
+    updateUI();
+}
+
+function updateUI() {
+    document.getElementById('supermarkets-count').textContent = currentSupermarkets.length;
+    document.getElementById('search-radius').textContent = `${SEARCH_RADIUS / 1000} km`;
+}
+
+function showLoadingIndicator(text = 'Loading...') {
+    isLoading = true;
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const loadingText = document.getElementById('loading-text');
+    
+    loadingText.textContent = text;
+    loadingIndicator.classList.remove('hidden');
+}
+
+function hideLoadingIndicator() {
+    isLoading = false;
+    const loadingIndicator = document.getElementById('loading-indicator');
+    loadingIndicator.classList.add('hidden');
+}
+
+function showErrorMessage(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.style.cssText = `
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 14px;
+        z-index: 1002;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    `;
+    errorDiv.textContent = message;
+    
+    document.body.appendChild(errorDiv);
+    
+    setTimeout(() => {
+        if (errorDiv.parentElement) {
+            errorDiv.parentElement.removeChild(errorDiv);
+        }
+    }, 5000);
+} </script>
+</body>
+</html> 
