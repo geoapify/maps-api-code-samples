@@ -1,147 +1,169 @@
-# Printable Route Directions with Geoapify
+# Generate Printable Turn-by-Turn Route Directions with JavaScript and Geoapify
 
-This code sample demonstrates how to generate **printable route directions** using the Geoapify [Routing API](https://www.geoapify.com/routing-api/) and Geoapify [Static Maps API](https://www.geoapify.com/static-maps-api/). It combines an interactive map interface with detailed step-by-step instructions, providing users with the ability to calculate, visualize, and print route directions.
+Build a browser-based route planner that turns Geoapify [Routing API](https://www.geoapify.com/routing-api/) results into printable turn-by-turn directions with static map images.
 
-The code retrieves the calculated route from the Geoapify Routing API and transforms it into **print-ready static content**, including:
+## What You Build
 
-- **Route Preview:** A static map image showing the entire route.
-- **Turn-by-Turn Directions:** Step-by-step instructions with icons, distances, and turn descriptions.
-- **Step Preview Images:** Visual previews of each step, including maneuvers, transitions, and nearby landmarks.
-- **Route Elevation Profile**: A detailed elevation profile, based on elevation data returned by the Geoapify Routing API.
+This JavaScript sample converts a calculated Geoapify route into a print-ready directions page. The workflow covers:
 
-This combination of dynamic and static content allows users to interact with the map to create routes and then print detailed, high-quality route information for offline use or distribution.
+- **Interactive route planning:** [`@geoapify/route-directions`](https://www.npmjs.com/package/@geoapify/route-directions) lets users add waypoints on a Leaflet map or through address inputs.
+- **Route calculation:** Geoapify Routing API returns route geometry, legs, steps, distance, time, and elevation data.
+- **Printable route overview:** Geoapify [Static Maps API](https://www.geoapify.com/static-maps-api/) generates a static map image of the full route.
+- **Turn-by-turn instructions:** the app renders route steps with maneuver icons, distances, street names, and per-step map previews.
+- **Elevation profile:** Chart.js displays elevation changes along the route for hiking, cycling, and other outdoor use cases.
+
+![Printable route directions demo with an interactive Leaflet map, static route preview, elevation chart, and turn-by-turn instructions](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/printable-route-directions/printable-route-directions-demo.png?raw=true)
+
+## Implementation Overview
+
+1. Use [`@geoapify/route-directions`](https://www.npmjs.com/package/@geoapify/route-directions) to collect waypoints and calculate a route.
+2. Render the route on a Leaflet map.
+3. Use the Geoapify Static Maps API to generate a route preview image.
+4. Read route legs and steps from the Routing API GeoJSON response.
+5. Generate turn-by-turn HTML instructions with icons and distances.
+6. Generate static map previews for individual maneuvers.
+7. Use Chart.js to render the route elevation profile.
+8. Print the generated route page from the browser.
 
 ## Demo
 
-You can see the code sample in action here: [Demo Link](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo_combined.html)
+You can see the code sample in action here: [Open the printable route directions demo](https://geoapify.github.io/maps-api-code-samples/javascript/printable-route-directions/demo_combined.html)
 
-## About the Code Sample
+## Used Libraries and APIs
 
-This code sample integrates the following tools and technologies:
+| Library or API | Type | Used for |
+| --- | --- | --- |
+| [`@geoapify/route-directions`](https://www.npmjs.com/package/@geoapify/route-directions) | JavaScript library | Waypoint inputs, route options, transportation modes, and route calculation events. |
+| [Geoapify Routing API](https://www.geoapify.com/routing-api/) | Geoapify API | Route geometry, route legs, turn-by-turn steps, distance, time, and elevation data. |
+| [Geoapify Static Maps API](https://www.geoapify.com/static-maps-api/) | Geoapify API | Static route overview images and per-step maneuver preview maps. |
+| [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/) | Geoapify API | Interactive Leaflet basemap tiles. |
+| [Geoapify Marker Icon API](https://www.geoapify.com/marker-icons-api/) | Geoapify API | Custom waypoint marker icons for the interactive map. |
+| [Leaflet](https://leafletjs.com/) | JavaScript library | Interactive map rendering, route layers, waypoint markers, and map controls. |
+| [Chart.js](https://www.chartjs.org/) | JavaScript library | Route elevation profile chart. |
+| [Turf.js](https://turfjs.org/) | JavaScript library | Route geometry calculations for maneuver previews. |
 
-### 1. [@geoapify/route-directions](https://www.npmjs.com/package/@geoapify/route-directions)
-- A JavaScript library that simplifies interaction with the **Geoapify Routing API**.
-- It enables users to add, update, and manage waypoints for route calculations.
-- Supports various transportation modes (e.g., driving, walking, cycling) and options (e.g., avoid tolls, ferries).
-- Automatically integrates Geoapify's API for seamless route management.
+## Project Files
 
-#### Example:
+- `src/demo.html` - the source HTML for the interactive route directions page.
+- `src/demo.js` - route calculation, map rendering, static map previews, and printable route instructions.
+- `src/elevation.js` - elevation profile data preparation and Chart.js rendering.
+- `src/styles.css` - screen and print styles for the sample.
+
+## Geoapify API Key
+
+The sample includes a Geoapify API key restricted to this demo. For your own project, create an API key in [Geoapify MyProjects](https://myprojects.geoapify.com/) and replace the `apiKey` value in `src/demo.js`:
+
 ```javascript
-// Initialize the RouteDirections object. This handles adding waypoints, calculating routes, and managing routing options.
+var apiKey = "YOUR_GEOAPIFY_API_KEY";
+```
+
+The same key is used for Geoapify Routing API requests, map tiles, static map images, and marker icons.
+
+## Code Walkthrough
+
+This walkthrough focuses on the main implementation steps in `src/demo.js` and `src/elevation.js`: collecting waypoints, rendering the route, generating static map images, building printable instructions, and drawing the elevation profile.
+
+### Initialize Route Controls
+
+The [`@geoapify/route-directions`](https://www.npmjs.com/package/@geoapify/route-directions) widget collects waypoints, exposes route options, and emits events when waypoints change or a route is calculated.
+
+```javascript
 const routeDirections = new directions.RouteDirections(
-    document.getElementById("route-directions"), // The HTML element to render route directions
-    'YOUR_GEOAPIFY_API_KEY', // Replace with your Geoapify API Key
+    document.getElementById("route-directions"),
+    apiKey,
     {
         supportedModes: [
             'walk', 'hike', 'scooter', 'motorcycle', 'drive', 
             'light_truck', 'medium_truck', 'truck', 'bicycle', 
             'mountain_bike', 'road_bike', 'bus'
-        ], // Specify transportation modes supported by the routing API
-        supportedOptions: ['highways', 'tolls', 'ferries'], // Routing options to include (e.g., avoid highways)
-        elevation: true // Enable elevation data for supported modes (e.g., hiking, biking)
+        ],
+        supportedOptions: ['highways', 'tolls', 'ferries'],
+        elevation: true
     },
     {
-        placeholder: "Enter an address here or click on the map" // Placeholder text for the input field
+        placeholder: "Enter an address here or click on the map"
     }
 );
-
-// Event handler for waypoint changes. Triggered when a waypoint is added, removed, or updated
-routeDirections.on('waypointChanged', (waypoint, reason) => {
-    // 'waypoint' contains information about the changed waypoint (e.g., latitude, longitude)
-    // 'reason' indicates why the change occurred (e.g., 'added', 'removed', 'updated')
-    console.log("Waypoint changed:", waypoint, "Reason:", reason);
-
-    // Example: Clear existing routes when a waypoint is removed
-    if (reason === "removed") {
-        // Add your code here to handle waypoint removal
-        console.log("Waypoint removed. Updating route...");
-    }
-});
-
-// Event handler for route calculation. Triggered when a route is successfully calculated
-routeDirections.on('routeCalculated', (geojson) => {
-    // 'geojson' contains the calculated route data in GeoJSON format
-    console.log("Route calculated:", geojson);
-
-    // Example: Visualize the route on a map
-    // Add your code here to display the route
-});
-
-
 ```
 
-### 2. [Leaflet](https://leafletjs.com/)
-- A popular JavaScript library for creating interactive maps.
-- Used here to display a map, manage user interactions, and visualize routes dynamically.
-- Integrates with Geoapify's map tiles for rich, customizable mapping.
-
-#### Example:
+The sample also lets users add waypoints by clicking the map:
 
 ```javascript
-// Define the map tile URL. Use high-resolution tiles for Retina displays, otherwise use standard tiles
-var mapURL = L.Browser.retina
-    ? `https://maps.geoapify.com/v1/tile/{mapStyle}/{z}/{x}/{y}@2x.png?apiKey=YOUR_GEOAPIFY_API_KEY`
-    : `https://maps.geoapify.com/v1/tile/{mapStyle}/{z}/{x}/{y}.png?apiKey=YOUR_GEOAPIFY_API_KEY`;
+map.on("click", (event) => {
+    routeDirections.addLocation(event.latlng.lat, event.latlng.lng);
+});
+```
 
-// Add a tile layer to the Leaflet map
+When a route is calculated, the sample updates all route-dependent views:
+
+```javascript
+routeDirections.on('routeCalculated', (geojson) => {
+    loadElevationData(geojson);
+    visualizeRoute(geojson);
+    generateInstructions(geojson);
+    getMapPreview(geojson);
+    updateElementsVisibility();
+});
+```
+
+### Render the Interactive Map
+
+Leaflet displays the interactive map, while Geoapify Map Tiles provide the basemap.
+
+```javascript
+var mapURL = L.Browser.retina
+    ? `https://maps.geoapify.com/v1/tile/{mapStyle}/{z}/{x}/{y}@2x.png?apiKey={apiKey}`
+    : `https://maps.geoapify.com/v1/tile/{mapStyle}/{z}/{x}/{y}.png?apiKey={apiKey}`;
+
 L.tileLayer(mapURL, {
     attribution: 'Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> | <a href="https://openmaptiles.org/" rel="nofollow" target="_blank">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" rel="nofollow" target="_blank">© OpenStreetMap</a> contributors', 
-    apiKey: apiKey, // Replace with your Geoapify API key
-    mapStyle: "osm-bright-smooth", // Use "osm-bright-smooth" map style. See more styles at https://apidocs.geoapify.com/docs/maps/map-tiles/
-    maxZoom: 20 // Set the maximum zoom level for the map
-}).addTo(map); // Add the tile layer to the map object
+    apiKey: apiKey,
+    mapStyle: "osm-bright-smooth",
+    maxZoom: 20
+}).addTo(map);
 
-// Add a zoom control to the map. Position the zoom control in the bottom-right corner of the map
 L.control.zoom({ position: 'bottomright' }).addTo(map);
-
 ```
 
-### 3. [Chart.js](https://www.chartjs.org/)
-- A flexible JavaScript library used for creating visualizations.
-- In this code sample, Chart.js is used to generate an **elevation profile** for the calculated route.
-- Elevation data is retrieved directly from the **Geoapify Routing API**, enabling users to visualize changes in elevation along the route.
+The route itself is rendered as two GeoJSON layers: a wider shadow line and a narrower visible route line. The sample also adds small circle markers at turn-by-turn instruction points.
 
-![Route Elevation Profile](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/printable-route-directions/elevation-profile.png?raw=true)
+### Render the Elevation Profile
 
-#### Example:
+The Geoapify Routing API returns `elevation_range` data for route legs when elevation is enabled. `src/elevation.js` converts that route data into Chart.js labels and values, then draws a line chart.
+
+![Printable route elevation profile generated from Geoapify Routing API data](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/printable-route-directions/elevation-profile.png?raw=true)
 
 ```javascript
-// Function to draw the elevation profile using Chart.js
 export function drawElevationProfile(routeData, elevationData) {
-    // Get the canvas context for the chart
     const ctx = document.getElementById("route-elevation-chart").getContext("2d");
-
-    // Prepare chart data
     const chartData = {
-        labels: elevationData.labels, // X-axis: Distance points along the route
+        labels: elevationData.labels,
         datasets: [{
-            data: elevationData.data, // Y-axis: Elevation values at corresponding distances
-            fill: true, // Fill the area under the line
-            borderColor: '#66ccff', // Line color
-            backgroundColor: '#66ccff66', // Fill color (with transparency)
-            tension: 0.1, // Smoothing factor for the line
-            pointRadius: 0, // Remove points from the line for a clean look
-            spanGaps: true // Allow gaps in data without breaking the line
+            data: elevationData.data,
+            fill: true,
+            borderColor: '#66ccff',
+            backgroundColor: '#66ccff66',
+            tension: 0.1,
+            pointRadius: 0,
+            spanGaps: true
         }]
     };
 
-    // Chart configuration
     const config = {
-        // see the full code in demo.html
+        // see the full configuration in src/elevation.js
     };
 
-    // Create the chart instance with the prepared configuration
     chartInstance = new Chart(ctx, config);
 }
 ``` 
 
-This integration adds an elevation visualization generated by `calculateElevationProfileData(routeData)` function to the printed route details, enhancing usability for activities like hiking or cycling.
+The `calculateElevationProfileData(routeData)` function also reduces the number of chart points to avoid rendering unnecessarily dense elevation data.
 
 ### Generating a Route Preview
 
 The **`getMapPreview()`** function demonstrates how to generate a static map image of the route using the **Geoapify Static Maps API**. This static image provides a visual overview of the calculated route, including markers for waypoints and the route geometry.
 
-![Route Preview on a Map](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/printable-route-directions/route-preview.jpeg?raw=true)
+![Static map route preview generated with Geoapify Static Maps API](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/printable-route-directions/route-preview.jpeg?raw=true)
 
 #### Why Use a POST Request?
 - **Large Geometry Data:** The route's geometry (line data) can be large and exceed the URL length limits of a GET request. 
@@ -213,18 +235,18 @@ The **`getMapPreview()`** function demonstrates how to generate a static map ima
 
 ### Generating Route Instructions
 
-The **`generateInstructions()`** function dynamically generates turn-by-turn instructions based on the route data (`geojson`) and populates a specified HTML container with these instructions. It leverages route properties like waypoints, legs, and steps to provide detailed guidance, including textual descriptions, icons, distances, and visual step previews. The image is generated via a **POST request and displayed dynamically** in the application.
+The **`generateInstructions()`** function dynamically generates turn-by-turn instructions based on the route data (`geojson`) and populates a specified HTML container with these instructions. It uses route properties like waypoints, legs, and steps to show route summaries, maneuver icons, instruction text, distances, and step preview images. The step preview image URL is generated by `generateImageURL()`.
 
 #### Key Aspects of `generateInstructions()`:
 
 1. **Dynamic HTML Creation:**
    - The function creates and appends HTML elements dynamically for each route instruction.
-   - It uses a container (`instrictionContainer`) to hold all instructions.
+   - It uses a container (`instructionContainer` in this sample) to hold all instructions.
    - Example:
      ```javascript
      const instruction = document.createElement("div");
      instruction.classList.add("direction-instruction");
-     instrictionContainer.appendChild(instruction);
+     instructionContainer.appendChild(instruction);
      ```
 
 2. **Mapping Instruction Types to Icons:**
@@ -279,9 +301,9 @@ The **`generateInstructions()`** function dynamically generates turn-by-turn ins
 
 ### Generating Step Previews
 
-The **`generateImageURL()`** function dynamically generates static map previews for individual steps of a route using the **Geoapify Static Maps API**. Each step preview highlights the route’s current position, shows the previous and next parts of the route, and includes a directional arrow to indicate the next maneuver.
+The **`generateImageURL()`** function dynamically generates static map preview URLs for individual route steps using the **Geoapify Static Maps API**. Each step preview highlights the route’s current position, shows the previous and next parts of the route, and includes a directional arrow for the next maneuver. Turf.js helps calculate bearings, clip nearby route geometry, and build the maneuver arrow polygon.
 
-![Step Preview on a Map](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/printable-route-directions/step-preview.jpeg?raw=true)
+![Turn-by-turn route step preview with maneuver arrow on a static map](https://github.com/geoapify/maps-api-code-samples/blob/main/javascript/printable-route-directions/step-preview.jpeg?raw=true)
 
 #### Key Aspects of `generateImageURL()`
 
@@ -306,7 +328,7 @@ The **`generateImageURL()`** function dynamically generates static map previews 
 
 3. **Directional Arrow for the Next Maneuver:**
    - A polyline represents the maneuver path, and a polygon arrow indicates the turn direction.
-   - Both are dynamically generated and included in the static map’s geometry.
+   - Both are dynamically generated and included in the static map's geometry.
    - Example:
      ```javascript
      geometries.push(`polygon:${manoeuvreArrow};linewidth:1;linecolor:${encodeURIComponent('#333333')};fillcolor:${encodeURIComponent('#ffffff')};fillopacity:1`);
@@ -314,34 +336,32 @@ The **`generateImageURL()`** function dynamically generates static map previews 
 
 ## How to Run the Sample
 
-You can run the Route + Elevation demo locally using a static server or directly in your IDE with live preview.
+Run the source version from the `src/` folder with a local HTTP server. Do not open `src/demo.html` directly with the `file://` protocol, because browser restrictions can block API requests and module loading.
 
 ### Option 1: Run with a Local HTTP Server
 
-Serve the contents of the folder using a static server:
-
-1. **Install `http-server`** (if not already installed):
+1. **Navigate to the sample folder**:
 
    ```bash
-   npm install -g http-server
+   cd javascript/printable-route-directions
    ```
 
-2. **Start the server** from the folder containing your HTML and JS files:
+2. **Start a static server**:
 
    ```bash
-   http-server .
+   npx http-server .
    ```
 
-3. **Open the demo** in your browser:
+3. **Open the source demo**:
 
    ```
-   http://localhost:8080/demo.html
+   http://localhost:8080/src/demo.html
    ```
 
-Or use `npx` for a one-time server:
+If `http-server` is already installed globally, you can run:
 
 ```bash
-npx http-server .
+http-server .
 ```
 
 ### Option 2: Use IDE Live Preview
@@ -352,46 +372,51 @@ Many modern IDEs provide live preview for HTML files:
 * **WebStorm / IntelliJ / PhpStorm** — Right-click `src/demo.html` and choose **“Open in Browser”**.
 * **Brackets** — Click the **lightning bolt icon** or use **File → Live Preview**.
 
-> Opening the file directly via `file://` protocol is not recommended, as some browsers block dynamic requests in local mode.
+## Related Code Samples
 
-## How to Build `demo_combined.html`
+- [Route visualization with Leaflet styling](https://github.com/geoapify/geoapify-quickstart-examples/tree/main/routing-api/route-visualization-leaflet-styling) - style Geoapify Routing API results on a Leaflet map.
+- [Visualize GeoJSON routes with Leaflet and Geoapify Routing API](https://github.com/geoapify/geoapify-quickstart-examples/tree/main/routing-api/visualizing-geojson-routes-with-leaflet-and-geoapify-routing-api) - render Routing API GeoJSON responses with Leaflet.
+- [`@geoapify/route-waypoint-selector`](https://www.npmjs.com/package/@geoapify/route-waypoint-selector) - add waypoint selection controls for route planning interfaces.
+- [Route waypoint selector CodePen demo](https://codepen.io/editor/geoapify/pen/019e889c-62eb-7336-baa5-3e367b66766f) - experiment with waypoint selection in an online editor.
 
-As an alternative to running the project from multiple files, you can generate a standalone HTML file with all scripts and styles inlined. This is useful for GitHub Pages or distributing the demo as a single file.
+## FAQ
 
-### Steps
+### How do I generate printable route directions in JavaScript?
 
-1. **Navigate to the parent folder**, e.g. `javascript/route-elevation-chart`:
+Use the Geoapify Routing API to calculate a route, then convert the returned GeoJSON legs and steps into HTML instructions. Use the Geoapify Static Maps API to generate static map images for the full route and individual maneuvers.
 
-   ```bash
-   cd javascript/route-elevation-chart
-   ```
+### Can I create turn-by-turn directions with static map previews?
 
-2. **Install the required build dependency**:
+Yes. This sample creates one static route preview and separate static images for each route step using Geoapify Static Maps API geometry parameters.
 
-   ```bash
-   npm install inline-source
-   ```
+### Does the sample support elevation profiles?
 
-3. **Run the build script** (make sure `combine.js` exists in the folder):
+Yes. The sample requests elevation data from the Geoapify Routing API and renders the route elevation profile with Chart.js.
 
-   ```bash
-   node combine.js
-   ```
+### Can I print the generated route directions?
 
-This will generate a `demo_combined.html` file with all JavaScript and CSS embedded inline.
+Yes. The sample creates print-ready HTML content with a route overview map, turn-by-turn instructions, step preview images, and an elevation profile that can be printed from the browser.
 
-> The `combine.js` script should take `src/` as input and produce a portable version suitable for publishing or offline usage.
+### Which Geoapify APIs are required for printable route directions?
 
+This sample uses the Geoapify Routing API to calculate routes, the Static Maps API to generate printable map images, Map Tiles for the interactive Leaflet map, and the Marker Icon API for waypoint markers.
 
-## Summary
+### Can I use this sample for walking, cycling, hiking, or truck routes?
 
-This code sample showcases how to use the **Geoapify Routing API** and **Geoapify Static Maps API** to generate rich, interactive route instructions and static map visuals. It includes key functionalities like:
+Yes. The sample configures `@geoapify/route-directions` with multiple transportation modes, including walking, hiking, cycling, driving, scooters, motorcycles, buses, and truck modes.
 
-- **Generating Turn-by-Turn Instructions:** Dynamically creating HTML elements with clear guidance, including icons, distances, and descriptions.
-- **Static Route Preview:** Using an image POST request to generate a high-quality, Base64-encoded map preview of the entire route.
-- **Step Previews:** Visualizing individual steps with dynamically calculated bearings, previous and next route segments, and directional arrows for precise maneuver guidance.
-- **Route Elevation Profile:** Rendering an elevation chart using **Chart.js**, based on elevation data returned by the Geoapify Routing API.
+### Why does the route preview use the Static Maps API instead of the interactive map?
 
-These features are ideal for creating printable or interactive route instructions, combining detailed visuals with clear, actionable guidance.
+Printable pages need stable image content. The Static Maps API generates image-based route previews that can be printed, saved, embedded, or shared more reliably than an interactive map.
 
-Explore more about Geoapify's APIs and capabilities at [geoapify.com](https://www.geoapify.com).
+### How are step-by-step map previews generated?
+
+Each step preview is generated as a Geoapify Static Maps API URL. The sample builds geometry overlays for the previous route segment, next route segment, maneuver path, and maneuver arrow.
+
+### Why does the full route preview use a POST request?
+
+The full route geometry can be too large for a URL. A POST request lets the sample send GeoJSON route data and marker definitions in the request body without hitting URL length limits.
+
+### Can I customize the printed route layout?
+
+Yes. Edit `src/styles.css` to customize the printable route preview, instruction list, step preview images, and elevation chart layout.

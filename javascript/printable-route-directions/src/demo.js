@@ -52,8 +52,8 @@ routeDirections.on('waypointChanged', (waypoint, reason) => {
         instructionMarkers = [];
     }
 
-    const instrictionContainer = document.getElementById("instructions");
-    instrictionContainer.innerHTML = '';
+    const instructionContainer = document.getElementById("instructions");
+    instructionContainer.innerHTML = '';
     updateMarkers();
     updateElementsVisibility();
     destroyChart();
@@ -168,7 +168,7 @@ function visualizeRoute(geojson) {
         }
     }).addTo(map);
 
-    // create a route layer, chack more styling options here - https://leafletjs.com/reference.html#path
+    // Create a route layer. Check more styling options here - https://leafletjs.com/reference.html#path
     routeLayer = L.geoJSON(geojson, {
         style: function (feature) {
             return { color: '#6699ff', weight: 4 };
@@ -223,8 +223,8 @@ function generateInstructions(geojson) {
 
     const waypoints = routeDirections.getOptions().waypoints;
 
-    const instrictionContainer = document.getElementById("instructions");
-    instrictionContainer.innerHTML = '';
+    const instructionContainer = document.getElementById("instructions");
+    instructionContainer.innerHTML = '';
 
     const isMetric = geojson.properties.distance_units === 'meters';
 
@@ -236,7 +236,7 @@ function generateInstructions(geojson) {
         const time = toPrettyTime(geojson.properties.time);
         waypointsInfo.textContent = `${distance}, ${time}`;
 
-        instrictionContainer.appendChild(waypointsInfo);
+        instructionContainer.appendChild(waypointsInfo);
     }
 
     geojson.properties.legs.forEach((leg, index) => {
@@ -258,7 +258,7 @@ function generateInstructions(geojson) {
             waypointsInfo.appendChild(fromTo);
         }
 
-        instrictionContainer.appendChild(waypointsInfo);
+        instructionContainer.appendChild(waypointsInfo);
 
         leg.steps.forEach((step, stepIndex) => {
             // create instruction for each step
@@ -303,7 +303,7 @@ function generateInstructions(geojson) {
             }
 
             instruction.appendChild(infoElement);
-            instrictionContainer.appendChild(instruction);
+            instructionContainer.appendChild(instruction);
 
             const imageElement = document.createElement("img");
             imageElement.src = generateImageURL(index, step, geojson.geometry.coordinates);

@@ -6,7 +6,6 @@
   <title>Print Driving Directions - Powered by Geoapify</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://unpkg.com/@highlightjs/cdn-assets@11.3.1/styles/a11y-light.min.css">
   <link rel="stylesheet" href="https://unpkg.com/@geoapify/route-directions@^1/styles/styles.min.css" />
   <style>html,
 body {
@@ -192,12 +191,10 @@ body {
   </div>
 
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/@highlightjs/cdn-assets@11.3.1/highlight.min.js"></script>
   <script src="https://unpkg.com/@geoapify/route-directions@^1/dist/index.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
   <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
 
-  <script>hljs.highlightAll();</script>
   <script type="module">Chart.register(
     Chart.LineElement,
     Chart.LineController,
@@ -294,7 +291,7 @@ export function drawElevationProfile(routeData, elevationData) {
         }],
         options: {
             onHover: function(e, item) {
-                // add hover here!!!
+                // Reserved for optional chart hover behavior.
             },
             animation: false,
             maintainAspectRatio: false,
@@ -429,8 +426,8 @@ routeDirections.on('waypointChanged', (waypoint, reason) => {
         instructionMarkers = [];
     }
 
-    const instrictionContainer = document.getElementById("instructions");
-    instrictionContainer.innerHTML = '';
+    const instructionContainer = document.getElementById("instructions");
+    instructionContainer.innerHTML = '';
     updateMarkers();
     updateElementsVisibility();
     destroyChart();
@@ -545,7 +542,7 @@ function visualizeRoute(geojson) {
         }
     }).addTo(map);
 
-    // create a route layer, chack more styling options here - https://leafletjs.com/reference.html#path
+    // Create a route layer. Check more styling options here - https://leafletjs.com/reference.html#path
     routeLayer = L.geoJSON(geojson, {
         style: function (feature) {
             return { color: '#6699ff', weight: 4 };
@@ -600,8 +597,8 @@ function generateInstructions(geojson) {
 
     const waypoints = routeDirections.getOptions().waypoints;
 
-    const instrictionContainer = document.getElementById("instructions");
-    instrictionContainer.innerHTML = '';
+    const instructionContainer = document.getElementById("instructions");
+    instructionContainer.innerHTML = '';
 
     const isMetric = geojson.properties.distance_units === 'meters';
 
@@ -613,7 +610,7 @@ function generateInstructions(geojson) {
         const time = toPrettyTime(geojson.properties.time);
         waypointsInfo.textContent = `${distance}, ${time}`;
 
-        instrictionContainer.appendChild(waypointsInfo);
+        instructionContainer.appendChild(waypointsInfo);
     }
 
     geojson.properties.legs.forEach((leg, index) => {
@@ -635,7 +632,7 @@ function generateInstructions(geojson) {
             waypointsInfo.appendChild(fromTo);
         }
 
-        instrictionContainer.appendChild(waypointsInfo);
+        instructionContainer.appendChild(waypointsInfo);
 
         leg.steps.forEach((step, stepIndex) => {
             // create instruction for each step
@@ -680,7 +677,7 @@ function generateInstructions(geojson) {
             }
 
             instruction.appendChild(infoElement);
-            instrictionContainer.appendChild(instruction);
+            instructionContainer.appendChild(instruction);
 
             const imageElement = document.createElement("img");
             imageElement.src = generateImageURL(index, step, geojson.geometry.coordinates);

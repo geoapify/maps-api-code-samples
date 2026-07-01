@@ -94,7 +94,7 @@ export function drawElevationProfile(routeData, elevationData) {
         }],
         options: {
             onHover: function(e, item) {
-                // add hover here!!!
+                // Reserved for optional chart hover behavior.
             },
             animation: false,
             maintainAspectRatio: false,
