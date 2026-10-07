@@ -15,6 +15,10 @@ Welcome to the **Geoapify Location Platform Code Samples** repository! This proj
 * [GPX Map Matching (Snap to Roads) with Geoapify & MapLibre GL](#javascript-gpx-map-matching-snap-to-roads-with-geoapify--maplibre-gl)
 * [Nearest Supermarkets by Driving Time](#javascript-nearest-supermarkets-by-driving-time)
 
+### React Native
+
+* [MapLibre React Native with Geoapify Map Tiles (Expo)](#react-native-maplibre-react-native-with-geoapify-map-tiles-expo)
+
 ### Node.js
 
 * [Batch Geocoding with Rate Limiting](#nodejs-batch-geocoding-with-rate-limiting)
@@ -194,6 +198,26 @@ Uses the Geoapify Places API to fetch candidate POIs, the Route Matrix API to ca
 
 **Demo:**
 👉 [Nearest Supermarkets by Driving Time – Live Demo](https://geoapify.github.io/maps-api-code-samples/javascript/nearest-poi-get-places-sorted-by-driving-time/demo_combined.html)
+
+---
+
+### React Native: [MapLibre React Native with Geoapify Map Tiles (Expo)](https://github.com/geoapify/maps-api-code-samples/tree/main/react-native/maplibre-react-native-expo-geoapify-map-tiles)
+
+**What it does:**  
+Shows a Geoapify vector map in an Expo app with MapLibre React Native v11, adds a marker, loads nearby cafés from the Places API and switches between light and dark map styles.
+
+**How it works:**  
+A TypeScript Expo app renders the MapLibre React Native `Map` with a Geoapify `style.json` URL, sets the initial view with `Camera`, and draws Places API results (GeoJSON) with a `GeoJSONSource` and a circle `Layer`. It runs as an Expo development build, because the library contains native code and doesn't work in Expo Go.
+
+**Key features:**
+- MapLibre React Native v11 (new architecture) with the Expo config plugin.
+- Geoapify `osm-bright` and `dark-matter` vector styles.
+- Up to 20 cafés from the Places API in one request (1 credit).
+- API key from an `EXPO_PUBLIC_` environment variable.
+
+**APIs used:**
+- [Geoapify Map Tiles](https://www.geoapify.com/map-tiles/)
+- [Geoapify Places API](https://www.geoapify.com/places-api/)
 
 ---
 

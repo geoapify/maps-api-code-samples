@@ -1,0 +1,25 @@
+{
+  "name": "maplibre-react-native-expo-geoapify-map-tiles",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@maplibre/maplibre-react-native": "^11.5.0",
+    "expo": "~57.0.26",
+    "expo-build-properties": "~57.0.22",
+    "expo-dev-client": "~57.0.19",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3"
+  },
+  "devDependencies": {
+    "@types/geojson": "^7946.0.16",
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "private": true
+}
