@@ -1,20 +1,23 @@
-# Display Addresses on a Map with Clustering and Confidence-Based Coloring (Folium)
+# Show Addresses on a Map in Python (Folium + Geoapify)
 
 ## Objective
-Create a Python script that visualizes **[geocoded addresses](https://github.com/geoapify/maps-api-code-samples/tree/main/python/geocode_addresses) on a Folium map**. The script should support **marker clustering**, **interactive popups**, and **custom marker colors based on confidence levels**. Optionally, it can integrate with the **[Geoapify Map Markers API](https://apidocs.geoapify.com/playground/icon/)** for enhanced visual styling.
+Show geocoded addresses on an interactive map in Python. The script reads the results of the [Geoapify Geocoding API](https://apidocs.geoapify.com/docs/geocoding/forward-geocoding/) from an NDJSON file (for example, the output of the [geocode_addresses](../geocode_addresses) sample), puts every address on a [Folium](https://python-visualization.github.io/folium/) map with [Geoapify map tiles](https://apidocs.geoapify.com/docs/maps/map-tiles/), and colors each marker by geocoding confidence. Optionally, it clusters nearby markers and uses icons from the [Geoapify Marker Icon API](https://apidocs.geoapify.com/docs/icon/).
 
-![Map Previews](https://github.com/geoapify/maps-api-code-samples/blob/main/python/show-addresses-on-a-map/addresses-on-a-map.png?raw=true)
+The flow: **address list → Geocoding API → NDJSON → map**.
+
+![Geocoded addresses on a map, colored by confidence](https://github.com/geoapify/maps-api-code-samples/blob/main/python/show-addresses-on-a-map/addresses-on-a-map.png?raw=true)
 
 ## Requirements
-- Python 3.11 or higher
+- Python 3.9 or higher
 - pip
+- A Geoapify API key: register on [Geoapify MyProjects](https://myprojects.geoapify.com/), create a project and copy its API key. The Free plan includes 3,000 credits per day.
 
 ## Setup Instructions
 
 ### 1. Clone the Repository
 ```bash
-git clone https://geoapify.github.io/maps-api-code-samples/
-cd maps-api-code-samples/python/
+git clone https://github.com/geoapify/maps-api-code-samples.git
+cd maps-api-code-samples/python/show-addresses-on-a-map
 ```
 
 ### 2. Create a Virtual Environment (Optional)
@@ -25,213 +28,93 @@ source env/bin/activate  # On Windows: env\Scripts\activate
 
 ### 3. Install Dependencies
 ```bash
-pip install folium ndjson
+pip install folium requests
 ```
 
 ## Running the Example
 
-Switch to the folder:
+Map with default Folium markers:
 
 ```bash
-cd show-addresses-on-a-map
+python show_addresses.py --input addresses.ndjson --api-key=YOUR_API_KEY
 ```
 
-Run the script:
+Map with clustering and Geoapify markers, saved to `my_map.html`:
 
 ```bash
 python show_addresses.py --input addresses.ndjson --output my_map.html --cluster --geoapify-markers --api-key=YOUR_API_KEY
 ```
 
-```bash
-python show_addresses.py --input addresses.ndjson --output map.html --cluster False
-```
+The script saves the map as an HTML file and opens it in your browser. `addresses.ndjson` contains 213 Geocoding API results for addresses in Germany; 212 of them have coordinates, and one is a `{"error": "Not found"}` line that the script skips.
 
 ## Command-Line Arguments
-| Argument              | Required | Description |
-|------------------------|----------|-------------|
-| `--input`              | Yes      | Path to the NDJSON input file |
-| `--output`             | No       | Path to output HTML file (default: `map.html`) |
-| `--cluster`            | No       | Enable marker clustering |
-| `--geoapify-markers`   | No       | Use Geoapify Map Markers API for icons |
-| `--api-key`            | No       | Geoapify API key (required if using `--geoapify-markers`) |
+| Argument             | Required | Description |
+|----------------------|----------|-------------|
+| `--input`            | Yes      | NDJSON file with geocoding results, one JSON object per line |
+| `--api-key`          | Yes      | Geoapify API key, used for the map tiles and the marker icons |
+| `--output`           | No       | Output HTML file (default: `map.html`) |
+| `--cluster`          | No       | Group nearby markers into clusters |
+| `--geoapify-markers` | No       | Use Geoapify Marker Icon API icons instead of the default Folium markers |
 
-## Features
-- Read geocoded addresses from NDJSON file
-- Interactive popups showing the address
-- Marker color coding based on `rank.confidence`:
-  - Green: ≥ 0.7
-  - Yellow: (0.7; 0.5]
-  - Orange: (0.5; 0.25]
-  - Red: < 0.25
-- Enable optional **marker clustering** via Folium's `MarkerCluster`
-- Use Geoapify Map Markers API for styled icons: https://apidocs.geoapify.com/playground/icon/
-- Auto-fit map bounds to include all points
-- Automatically opens generated HTML map
+## Input Format (NDJSON)
+One JSON object per line. The script uses `lat`, `lon`, `formatted` (or `address`) and `rank.confidence`, the fields of a Geoapify Geocoding API result. A line from `addresses.ndjson`, shortened:
 
-## Error Handling
-- Skips and warns on invalid or incomplete records
-- Validates required fields (`lat`, `lon`, optionally `address`, `rank.confidence`)
-- Provides user-friendly errors for input issues
-
-## Example Input (NDJSON)
 ```json
-{"lat": 48.858844, "lon": 2.294351, "address": "Eiffel Tower", "rank": {"confidence": 0.95}}
-{"lat": 40.748817, "lon": -73.985428, "address": "Empire State", "rank": {"confidence": 0.65}}
-{"lat": 51.500729, "lon": -0.124625, "address": "Big Ben", "rank": {"confidence": 0.4}}
+{"lat": 50.815728, "lon": 8.1043638, "formatted": "57234 Wilnsdorf, Germany", "result_type": "postcode", "rank": {"confidence": 0.3}}
 ```
+
+Records without `lat` or `lon` are skipped and counted. A missing `rank.confidence` counts as 0.
+
+## Marker Colors
+
+| Confidence (`rank.confidence`) | Folium marker | Geoapify marker |
+|-------------------------------|---------------|-----------------|
+| 0.7 and above                 | green         | `#2e7d32`       |
+| 0.5 to 0.7                    | beige         | `#f9a825`       |
+| 0.25 to 0.5                   | orange        | `#ef6c00`       |
+| below 0.25                    | red           | `#c62828`       |
+
+Low confidence usually means the geocoder matched only part of the address (a street or a postcode instead of a building). Check those addresses before you use them.
 
 ## Code Explanation
 
-### Imports
+### Geoapify map tiles
 
 ```python
-import argparse, webbrowser
-from urllib.parse import urlencode
-import folium, ndjson
-from branca.colormap import linear
-from folium.plugins import MarkerCluster
+BASE_MAP_TILE_URL = "https://maps.geoapify.com/v1/tile/{map_style}/{{z}}/{{x}}/{{y}}@2x.png?apiKey={api_key}"
 ```
 
-- `folium`: interactive map rendering.
-- `MarkerCluster`: groups nearby markers.
-- `linear`: color gradient scale for confidence.
-- `ndjson`: reads newline-delimited JSON.
-- `webbrowser`: opens map in the browser.
+`create_map()` adds this URL as a Folium `TileLayer` with the `osm-bright` style and the attribution "Powered by Geoapify | © OpenMapTiles © OpenStreetMap contributors". Other styles are listed in the [Map Tiles documentation](https://apidocs.geoapify.com/docs/maps/map-tiles/).
 
-### `read_ndjson(file_path)`
-
-Reads geocoded data from an NDJSON file.
-
-- Returns a list of dicts.
-- Gracefully handles missing files or malformed data.
-
-### `calculate_bounds(points)`
-
-Calculates map bounds for all coordinates to ensure all markers are visible.
+### Geoapify markers
 
 ```python
-sw = [min(latitudes), min(longitudes)]  # Southwest
-ne = [max(latitudes), max(longitudes)]  # Northeast
+params = {
+    'type': 'material',
+    'icon': 'building',
+    'iconType': 'awesome',
+    'color': color,
+    'scaleFactor': 2,  # sharp on high-density screens
+    'apiKey': api_key,
+}
+icon_url = f"https://api.geoapify.com/v2/icon?{urlencode(params)}"
+response = requests.head(icon_url, timeout=10)
 ```
 
-### `get_discrete_color(confidence)`
+The Marker Icon API returns a PNG marker. Its `Icon-Width`, `Icon-Height`, `Icon-Anchor-X` and `Icon-Anchor-Y` response headers give the display size and the anchor point, so the script makes one `HEAD` request per color and passes these values to `folium.CustomIcon`. The marker tip then sits exactly on the address. Try other shapes, icons and colors in the [Marker Icon API Playground](https://apidocs.geoapify.com/playground/icon/).
 
-Returns a color based on confidence value:
+### Points, popups and bounds
 
-| Confidence Range | Color  |
-|------------------|--------|
-| ≥ 0.7            | Green  |
-| 0.5 – 0.7        | Yellow |
-| 0.25 – 0.5       | Orange |
-| < 0.25           | Red    |
+For each record, `create_map()` picks the confidence color, adds a marker with a popup (the address and its confidence) to the map or to a `MarkerCluster`, and finally calls `fit_bounds()` with the south-west and north-east corners of all points, so every marker is visible.
 
-Used if **Geoapify markers are not enabled**.
+## Attribution
+The map shows the "Powered by Geoapify", "© OpenMapTiles" and "© OpenStreetMap contributors" attribution that the script adds. The `building` icon is from [Font Awesome](https://fontawesome.com/) (CC BY 4.0).
 
-### `create_map(...)`
-
-```python
-def create_map(data, cluster, add_geoapify_markers=False, api_key=None):
-    if not data:
-        print("No data to display on the map.")
-        return
-
-    # Initialize map
-    m = folium.Map(location=[0, 0], zoom_start=10)
-
-    # Construct the tile URL with the selected map style and API Key
-    tile_url = BASE_MAP_TILE_URL.format(map_style="osm-bright", api_key=api_key)
-
-    # Add the Geoapify raster tiles to the map
-    folium.TileLayer(
-        tiles=tile_url,
-        name='Geoapify Map',
-        attr="""Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> 
-        | <a href="https://openmaptiles.org/" rel="nofollow" target="_blank">© OpenMapTiles</a> contributors""",
-        overlay=True,
-        control=True
-    ).add_to(m)    
-
-    # Init marker cluster
-    marker_cluster = MarkerCluster().add_to(m) if cluster else None
-    # Use gradient of green for Geoapify markers else discrete colors
-    get_color = get_discrete_color if not add_geoapify_markers else linear.Greens_04
-
-    coords = []
-    for entry in data:
-        lat = entry.get('lat')
-        lon = entry.get('lon')
-        address = entry.get('formatted', '')
-        confidence = entry.get('rank', {}).get('confidence', 0)
-
-        # Check required fields
-        if not (lat and lon):
-            print("Skipping entry with missing coordinates, address or geocoding confidence.")
-            continue
-
-        marker_color = get_color(confidence)
-        if add_geoapify_markers:
-            # Use Geoapify Map Markers API
-            params = {
-                'type': 'material',
-                'color': marker_color,
-                'icon': 'building',
-                'iconType': 'awesome',
-                'apiKey': api_key
-            }
-            icon_url = f"https://api.geoapify.com/v1/icon/?{urlencode(params)}"
-            icon = folium.CustomIcon(icon_url, icon_size=(31, 46), icon_anchor=(15, 42), popup_anchor=(0, -42))
-        else:
-            # Use default folium markers with color coding
-            icon = folium.Icon(color=marker_color)
-
-        marker = folium.Marker(
-            location=[lat, lon],
-            popup=folium.Popup(address, parse_html=True),
-            icon=icon
-        )
-
-        marker.add_to(marker_cluster if marker_cluster else m)
-        coords.append([lon, lat])
-
-    # Adjust map viewport to contain all given points
-    if coords:
-        m.fit_bounds(calculate_bounds(coords))
-    return m
-```
-
-#### Inputs:
-- `data`: List of geocoded results
-- `cluster`: Boolean toggle for marker clustering
-- `add_geoapify_markers`: Whether to use Geoapify's marker icons
-- `api_key`: Required for Geoapify markers
-
-#### Key Steps:
-
-1. **Initialize map**
-   ```python
-   folium.Map(location=[0, 0], zoom_start=10)
-   ```
-
-2. **Add Geoapify tile layer**  
-   Uses a styled base map from Geoapify via:
-   ```
-   https://maps.geoapify.com/v1/tile/{map_style}/{z}/{x}/{y}@2x.png?apiKey=...
-   ```
-
-3. **Set up clustering** (if `--cluster` is enabled):
-   ```python
-   marker_cluster = MarkerCluster().add_to(m)
-   ```
-
-4. **Loop through address entries**:
-   - Extract `lat`, `lon`, `address`, `confidence`
-   - Skip invalid records
-   - Determine marker color:
-     - Custom Geoapify marker: colored icon URL via `https://api.geoapify.com/v1/icon/?...`
-     - Default marker: `folium.Icon(color=...)`
-   - Create marker and add it to the map or cluster group
-
-5. **Auto-fit bounds** to display all points using `fit_bounds()`.
+## Related
+- [Python Geocoding Tutorial: From Address List to Saved Results](https://www.geoapify.com/tutorial/geocoding-python/)
+- [geocode_addresses](../geocode_addresses): create the NDJSON file from an address list
+- [Map Tiles documentation](https://apidocs.geoapify.com/docs/maps/map-tiles/)
+- [Marker Icon API documentation](https://apidocs.geoapify.com/docs/icon/)
 
 ## License
 MIT License
